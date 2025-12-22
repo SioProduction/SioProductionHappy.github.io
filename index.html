@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Перед ARG</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: white;
+    }
+
+    body {
+      background-image: url('pic/fon1.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* Оверлей для затемнения */
+    #fade-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 99;
+    }
+
+    #fade-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Контент — сверху по центру */
+    #content {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .animated-text {
+      opacity: 0;
+      animation: fadeInFloat 1s ease-out forwards;
+    }
+
+    .animated-text:nth-child(1) { animation-delay: 0.3s; }
+    .animated-text:nth-child(2) { animation-delay: 0.6s; }
+
+    @keyframes fadeInFloat {
+      0% { opacity: 0; transform: translateY(20px); }
+      70% { transform: translateY(-3px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    #text1 {
+      width: 60%;
+      max-width: 930px;
+      height: auto;
+      margin-bottom: 2rem;
+    }
+
+    #text2 {
+      width: 40%;
+      max-width: 530px;
+      height: auto;
+      margin-bottom: 2rem;
+    }
+
+    /* Заголовок Konsole — над окном */
+    #console-header {
+      position: relative;
+      width: 90%;
+      max-width: 1000px;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 14px 14px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0;
+      padding: 0;
+      overflow: hidden;
+      z-index: 11;
+    }
+
+    .header-text {
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: #00ccff;
+      font-size: 16px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* RootConsole */
+    .console-panel {
+      position: relative;
+      margin-top: 0;
+      width: 90%;
+      max-width: 1000px;
+      padding: 1.6rem;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 0 0 14px 14px;
+      border: 1px solid rgba(0, 150, 255, 0.4);
+      box-shadow:
+        inset 0 0 16px rgba(0, 150, 255, 0.2),
+        0 4px 20px rgba(0, 0, 0, 0.4);
+      font-family: 'Courier New', monospace;
+      color: #00ff88;
+      line-height: 1.6;
+      font-size: 14px;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .command {
+      font-family: 'Courier New', monospace;
+      color: #00ffcc;
+      font-weight: bold;
+      margin-bottom: 0.6rem;
+    }
+
+    #typing-output {
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      margin-bottom: 1rem;
+      color: #00ff88;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .timer-line {
+      font-family: 'Courier New', monospace;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      color: #00ff88;
+    }
+
+    .inline-clock {
+      width: 20px;
+      height: 24px;
+      object-fit: contain;
+      margin-left: 0.5rem;
+      filter: drop-shadow(0 0 2px rgba(0, 255, 200, 0.5));
+      vertical-align: middle;
+    }
+
+    .console-footer {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: rgba(0, 255, 150, 0.7);
+      margin-top: 1rem;
+      text-align: right;
+    }
+
+    /* FAQ */
+    #faq-block {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 1200px;
+      padding: 2rem;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      font-family: Arial, sans-serif;
+      color: #000;
+      line-height: 1.6;
+      font-size: 14px;
+      overflow: hidden;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+      display: flex;
+      gap: 2rem;
+    }
+
+    #faq-block.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .faq-text {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .faq-title {
+      font-weight: bold;
+      margin-bottom: 1rem;
+      font-size: 18px;
+      letter-spacing: 1px;
+      color: #0066cc;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .faq-icon {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
+    }
+
+    .faq-item {
+      margin-bottom: 1rem;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .faq-question {
+      font-weight: bold;
+      color: #0066cc;
+    }
+
+    .faq-answer {
+      margin-top: 0.5rem;
+      color: #333;
+    }
+
+    .kryto-container {
+      display: flex;
+      gap: 0.8rem;
+      max-width: 620px;
+    }
+
+    .kryto-image {
+      width: 200px;
+      aspect-ratio: 3/2;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #999;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Третий блок */
+    #contact-block {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 1200px;
+      padding: 2rem;
+      background: #000;
+      border-radius: 12px;
+      display: flex;
+      gap: 2rem;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+
+    #contact-block.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .contact-text {
+      flex: 1;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .contact-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 1rem;
+      color: #00ccff;
+    }
+
+    .contact-links {
+      margin-bottom: 1rem;
+    }
+
+    .contact-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .contact-image-link {
+      display: block;
+      width: fit-content;
+    }
+
+    .contact-image-link:hover {
+      opacity: 0.9;
+    }
+
+    .contact-image {
+      width: 500px;
+      height: 569px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    #register-text {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      color: #fff;
+      line-height: 1.4;
+      text-align: left;
+      max-width: 500px;
+      transition: all 0.1s ease;
+    }
+
+    /* Адаптив */
+    @media (max-width: 1300px) {
+      .contact-image {
+        width: 350px;
+        height: auto;
+      }
+      #register-text {
+        max-width: 350px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      #contact-block, #faq-block {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .contact-right {
+        align-items: center;
+      }
+      #register-text {
+        max-width: 90%;
+        text-align: center;
+      }
+    }
+
+    /* Стрелки */
+    .nav-arrow {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid rgba(0, 150, 255, 0.5);
+      background: rgba(0, 150, 255, 0.15);
+      border-radius: 12px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #4ccfff;
+      text-shadow: 0 0 4px rgba(0, 200, 255, 0.6);
+      z-index: 100;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .nav-arrow:hover {
+      transform: scale(1.1);
+      border-color: rgba(0, 200, 255, 0.8);
+      background: rgba(0, 200, 255, 0.25);
+      box-shadow: 0 0 12px rgba(0, 200, 255, 0.5);
+    }
+
+    #arrow-down {
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #arrow-up {
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-arrow.hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="fade-overlay"></div>
+
+  <div id="content">
+    <img src="pic/text1.gif" id="text1" class="animated-text" alt="text1" />
+    <img src="pic/text2.gif" id="text2" class="animated-text" alt="text2" />
+
+    <div id="console-header">
+      <span class="header-text">Konsole</span>
+    </div>
+
+    <div class="console-panel">
+      <div class="console-text">
+        <div class="command">&lt;User&gt; !info</div>
+        <div id="typing-output"></div>
+        <div class="timer-line">
+          Время запуска: <span id="clock">loading...</span> <img src="pic/Clock.webp" class="inline-clock" alt="Clock" />
+        </div>
+        <div class="console-footer">© 2025 SioProduction — All Rights Reserved</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="faq-block">
+    <div class="faq-text">
+      <div class="faq-title">
+        <img src="pic/ObserveIcon.webp" class="faq-icon" alt="ObserveIcon" />
+        FAQ
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Почему именно мой проект?</div>
+        <div class="faq-answer">Мой проект — это сборище идей с интересными концепциями, где каждая деталь создаётся в разные периоды времени. В каждом блоке — своё настроение, идея, мысль.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Почему так долго создается?</div>
+        <div class="faq-answer">Я делаю всё один и не могу найти туториалов, так что сижу на форумах и выкручиваюсь, используя те знания, которые у меня есть за 11 лет игры в Minecraft.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Кто ты сам такой?</div>
+        <div class="faq-answer">О мне можно узнать в моих соцсетях (смотрите ниже). Я — просто бездельник, которому нравится делать разные интересные «штуки».</div>
+      </div>
+    </div>
+
+    <div class="kryto-container">
+      <img src="pic/kryto1.png" class="kryto-image" alt="kryto1" />
+      <img src="pic/kryto2.png" class="kryto-image" alt="kryto2" />
+      <img src="pic/kryto3.png" class="kryto-image" alt="kryto3" />
+    </div>
+  </div>
+
+  <div id="contact-block">
+    <div class="contact-text">
+      <div class="contact-title">Связь с автором:</div>
+      <div class="contact-links">
+        https://www.youtube.com/@Sio12Sav<br>
+        https://t.me/oneAItsjustaburningmemory<br>
+        basedpohtasio@gmail.com<br>
+        TG: @Marisadru<br>
+        Discord: siosav
+      </div>
+    </div>
+    <div class="contact-right">
+      <a href="happy.html" class="contact-image-link">
+        <img src="pic/web.jpg" class="contact-image" alt="Web">
+      </a>
+      <div id="register-text">Зарегистрируйтесь, чтобы знать<br>больше новостей и доп. контента! :D</div>
+    </div>
+  </div>
+
+  <div class="nav-arrow" id="arrow-down">↓</div>
+  <div class="nav-arrow hidden" id="arrow-up">↑</div>
+
+  <script>
+    const fullText = `### Poisoned Vessel of Hygieia — проект, созданный в Minecraft за авторством Sio@SioProduction.
+Начиная с 2025 года в одиночку и по сей день.`;
+
+    const output = document.getElementById('typing-output');
+    let index = 0;
+
+    function typeText() {
+      if (index < fullText.length) {
+        output.textContent += fullText.charAt(index);
+        index++;
+        setTimeout(typeText, 20);
+      }
+    }
+
+    const clockElement = document.getElementById('clock');
+    const startTime = new Date('2025-03-20T00:00:00');
+
+    function updateClock() {
+      const now = new Date();
+      const diffMs = now - startTime;
+      const diffSec = Math.floor(diffMs / 1000);
+      const seconds = diffSec % 60;
+      const minutes = Math.floor(diffSec / 60) % 60;
+      const hours = Math.floor(diffSec / 3600) % 24;
+      const days = Math.floor(diffSec / (24 * 3600));
+      const timeStr = `${days}д ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      clockElement.textContent = timeStr;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // === ГЛЮК-ЭФФЕКТ ДЛЯ ТЕКСТА РЕГИСТРАЦИИ ===
+    function glitchRegisterText() {
+      const el = document.getElementById('register-text');
+      if (!el) return;
+
+      const colors = ['#00ff88', '#ff44aa', '#ffffff', '#005522'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const fonts = ['monospace', 'Courier New', 'Impact', 'Arial'];
+      const font = fonts[Math.floor(Math.random() * fonts.length)];
+      const fontWeight = Math.random() > 0.5 ? 'bold' : 'normal';
+      const italic = Math.random() > 0.7 ? 'italic' : 'normal';
+      const rotate = (Math.random() - 0.5) * 6;
+      const skew = (Math.random() - 0.5) * 4;
+
+      el.style.color = color;
+      el.style.fontFamily = font;
+      el.style.fontWeight = fontWeight;
+      el.style.fontStyle = italic;
+      el.style.transform = `rotate(${rotate}deg) skew(${skew}deg)`;
+      el.style.textShadow = `0 0 8px ${color}80`;
+      el.style.letterSpacing = `${(Math.random() - 0.5) * 2}px`;
+
+      setTimeout(() => {
+        el.style.color = '#fff';
+        el.style.fontFamily = 'Arial, sans-serif';
+        el.style.fontWeight = 'normal';
+        el.style.fontStyle = 'normal';
+        el.style.transform = 'rotate(0deg) skew(0deg)';
+        el.style.textShadow = 'none';
+        el.style.letterSpacing = '0';
+      }, 200);
+    }
+
+    setInterval(glitchRegisterText, 5000);
+    setTimeout(glitchRegisterText, 5000);
+
+    // === НАВИГАЦИЯ ===
+    const body = document.body;
+    const overlay = document.getElementById('fade-overlay');
+    const content = document.getElementById('content');
+    const arrowDown = document.getElementById('arrow-down');
+    const arrowUp = document.getElementById('arrow-up');
+    const faqBlock = document.getElementById('faq-block');
+    const contactBlock = document.getElementById('contact-block');
+    let currentBlock = 1;
+
+    function fadeOut() {
+      overlay.classList.add('active');
+    }
+
+    function fadeIn() {
+      overlay.classList.remove('active');
+    }
+
+    function goToBlock(blockNum) {
+      fadeOut();
+      setTimeout(() => {
+        if (blockNum === 1) {
+          body.style.backgroundImage = "url('pic/fon1.png')";
+          content.style.opacity = '1';
+          faqBlock.style.opacity = '0';
+          faqBlock.style.pointerEvents = 'none';
+          contactBlock.style.opacity = '0';
+          contactBlock.style.pointerEvents = 'none';
+          arrowUp.classList.add('hidden');
+          arrowDown.classList.remove('hidden');
+        }
+        else if (blockNum === 2) {
+          body.style.backgroundImage = "url('pic/fon2.png')";
+          content.style.opacity = '0';
+          faqBlock.style.opacity = '1';
+          faqBlock.style.pointerEvents = 'auto';
+          contactBlock.style.opacity = '0';
+          contactBlock.style.pointerEvents = 'none';
+          arrowUp.classList.remove('hidden');
+          arrowDown.classList.remove('hidden');
+        }
+        else if (blockNum === 3) {
+          body.style.backgroundImage = "url('pic/fon3.png')";
+          content.style.opacity = '0';
+          faqBlock.style.opacity = '0';
+          faqBlock.style.pointerEvents = 'none';
+          contactBlock.style.opacity = '1';
+          contactBlock.style.pointerEvents = 'auto';
+          arrowUp.classList.remove('hidden');
+          arrowDown.classList.add('hidden');
+        }
+        currentBlock = blockNum;
+        setTimeout(fadeIn, 300);
+      }, 300);
+    }
+
+    const block = (e) => e.preventDefault();
+    window.addEventListener('wheel', block, { passive: false });
+    window.addEventListener('touchmove', block, { passive: false });
+
+    arrowDown.addEventListener('click', () => {
+      if (currentBlock === 1) goToBlock(2);
+      else if (currentBlock === 2) goToBlock(3);
+    });
+
+    arrowUp.addEventListener('click', () => {
+      if (currentBlock === 2) goToBlock(1);
+      else if (currentBlock === 3) goToBlock(2);
+    });
+
+    window.addEventListener('load', () => {
+      setTimeout(typeText, 800);
+    });
+  </script>
+
+</body>
+</html>
