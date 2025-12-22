@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Вход</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #208C71;
+      position: relative;
+      font-family: "Terminal", "Courier New", monospace;
+      color: #000;
+    }
+
+    /* Чёрные полосы по бокам */
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      width: 120px;
+      height: 100vh;
+      background: #000;
+      z-index: 10;
+    }
+    body::before { left: 0; }
+    body::after { right: 0; }
+
+    .content-wrapper {
+      margin: 0 120px;
+      min-height: 8000px;
+      padding-top: 120px;
+      position: relative;
+    }
+
+    .login-box {
+      width: 600px;
+      background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+      border: 3px solid #777;
+      padding: 20px;
+      margin: 0 auto;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+      position: relative;
+    }
+
+    .login-box::before {
+      content: "";
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      height: 22px;
+      background: #0055aa;
+      border-bottom: 1px solid #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .header-img {
+      display: block;
+      margin: 20px auto 10px;
+      max-width: 200px;
+      max-height: 200px;
+      border: 1px solid #666;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .login-title {
+      text-align: center;
+      margin: 10px 0 15px;
+      font-size: 16px;
+      color: black;
+      font-weight: normal;
+    }
+
+    .input-area {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 6px;
+      font-family: "Terminal", monospace;
+      font-size: 14px;
+      border: 2px inset #aaa;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background: #d8d8d8;
+      border: 2px outset #777;
+      padding: 6px 12px;
+      font-family: "Terminal", monospace;
+      color: #000;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .error {
+      color: red;
+      margin-top: 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    #passwordPanel {
+      width: 600px;
+      background: linear-gradient(to bottom, #e8e8e8, #d0d0d2);
+      border: 3px solid #777;
+      padding: 20px;
+      margin: 0 auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      position: relative;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(30px);
+      transition: all 0.4s ease;
+    }
+
+    #passwordPanel.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    #passwordPanel::before {
+      content: "";
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      height: 20px;
+      background: #0055aa;
+      border-bottom: 1px solid #fff;
+    }
+
+    #passwordPanel p {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .secret {
+      text-align: center;
+      margin-top: 7800px;
+      font-family: "Terminal", monospace;
+      font-size: 14px;
+      color: #000;
+      opacity: 0.8;
+      cursor: pointer;
+    }
+
+    /* === ВСПОМНИ === */
+    #remember {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      color: red;
+      font-size: 60px;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    #remember.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #remember span {
+      display: inline-block;
+      margin: 0 4px;
+    }
+
+    #darkenLayer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: transparent;
+      z-index: 999998;
+      pointer-events: none;
+    }
+
+    #what1img {
+      position: fixed;
+      top: 260px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 200px;
+      max-height: 200px;
+      z-index: 999999;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="login-box">
+      <img src="smily1.jpg" alt="Смайлик" class="header-img" id="smileyImg" />
+      <div class="login-title">Регистрация на сайт</div>
+
+      <div class="input-area">
+        <input
+          type="text"
+          id="usernameInput"
+          placeholder="Имя пользователя..."
+          maxlength="12"
+          onkeydown="if(event.key === 'Enter') tryShowPassword()"
+        />
+        <button onclick="tryShowPassword()">Продолжить</button>
+        <div id="userError" class="error"></div>
+      </div>
+    </div>
+
+    <div id="passwordPanel">
+      <p>Введите пароль:</p>
+      <input
+        type="password"
+        id="passwordInput"
+        placeholder="Пароль"
+        maxlength="4"
+        onkeydown="if(event.key === 'Enter') checkPassword()"
+      />
+      <br />
+      <button onclick="checkPassword()">Войти</button>
+      <div id="passError" class="error"></div>
+    </div>
+
+    <div class="secret">
+      Кстати! Наш самый частый пароль:| <span id="secretCode">1337</span> | XD Интересно почему???
+    </div>
+  </div>
+
+  <div id="remember"><span>В</span><span>С</span><span>П</span><span>О</span><span>М</span><span>Н</span><span>И</span></div>
+
+  <div id="darkenLayer"></div>
+  <img id="what1img" src="what1.jpg" style="display: none;">
+
+  <script>
+    const targetUsername = "cookieXD43";
+    let currentTypedLength = 0;
+    const usernameInput = document.getElementById('usernameInput');
+    const userErrorEl = document.getElementById('userError');
+    const passErrorEl = document.getElementById('passError');
+    const passwordPanel = document.getElementById('passwordPanel');
+    const smileyImg = document.getElementById('smileyImg');
+    const rememberEl = document.getElementById('remember');
+    const what1img = document.getElementById('what1img');
+    const darkenLayer = document.getElementById('darkenLayer');
+    const secretBlock = document.querySelector('.secret');
+    const secretCode = document.getElementById('secretCode');
+
+    // Звуки
+    const errorSound = new Audio('169. Usb1.mp3');
+    const successSound = new Audio('170. Usb2.mp3');
+    const glitchSound = new Audio('177. Worm.Hit.mp3');
+    const lagSound = new Audio('FunnyTownOld.mp3.mp3');
+    const giygasSound = new Audio('Giygas Intro.mp3');
+
+    errorSound.volume = 0.25;
+    successSound.volume = 0.25;
+    glitchSound.volume = 0.05;
+    lagSound.volume = 0.5;
+    giygasSound.volume = 1/6;
+
+    [errorSound, successSound, glitchSound, lagSound, giygasSound].forEach(s => s.preload = 'auto');
+
+    let password1234Attempts = 0;
+    let isFrozen = false;
+
+    // Смайлик через минуту
+    setTimeout(() => {
+      if (!isFrozen) {
+        smileyImg.src = 'smily2.jpg';
+        smileyImg.style.opacity = '0.8';
+        setTimeout(() => {
+          if (!isFrozen) smileyImg.style.opacity = '1';
+        }, 300);
+      }
+    }, 60000);
+
+    // === ПРОСТОЕ ИЗМЕНЕНИЕ ТЕКСТА (БЕЗ АНИМАЦИИ) ===
+    secretBlock.addEventListener('mouseenter', () => {
+      secretCode.textContent = '1234?';
+    });
+    secretBlock.addEventListener('mouseleave', () => {
+      secretCode.textContent = '1337';
+    });
+
+    usernameInput.addEventListener('input', function () {
+      if (isFrozen) return;
+      const oldVal = usernameInput.value;
+      const newLength = oldVal.length;
+      if (newLength > currentTypedLength) {
+        if (currentTypedLength < targetUsername.length) {
+          usernameInput.value = targetUsername.substring(0, currentTypedLength + 1);
+          currentTypedLength++;
+        } else {
+          usernameInput.value = targetUsername;
+        }
+      } else if (newLength < currentTypedLength) {
+        currentTypedLength = newLength;
+      }
+    });
+
+    function tryShowPassword() {
+      if (isFrozen) return;
+      userErrorEl.textContent = "";
+      const username = usernameInput.value;
+      if (username === targetUsername) {
+        passwordPanel.classList.add('show');
+        successSound.play().catch(e => {});
+      } else {
+        passwordPanel.classList.remove('show');
+        userErrorEl.textContent = "ERROR 433";
+        errorSound.play().catch(e => {});
+      }
+    }
+
+    // === АНИМАЦИЯ "ВСПОМНИ" (оставлена без изменений) ===
+    function animateRememberText() {
+      const letters = rememberEl.querySelectorAll('span');
+      const fonts = ['"Courier New", monospace', '"Lucida Console", monospace', '"Consolas", monospace', '"Monaco", monospace', '"Terminal", monospace', '"DejaVu Sans Mono", monospace'];
+      const styles = ['normal', 'italic'];
+      const weights = [300, 400, 700, 900];
+      setInterval(() => {
+        letters.forEach(span => {
+          span.style.fontFamily = fonts[Math.floor(Math.random() * fonts.length)];
+          span.style.fontStyle = styles[Math.floor(Math.random() * styles.length)];
+          span.style.fontWeight = weights[Math.floor(Math.random() * weights.length)];
+        });
+      }, 500);
+    }
+    animateRememberText();
+
+    function checkPassword() {
+      if (isFrozen) return;
+      passErrorEl.textContent = "";
+      const username = usernameInput.value;
+      const password = document.getElementById('passwordInput').value.trim();
+
+      if (username !== targetUsername) {
+        passErrorEl.textContent = "ERROR 433";
+        errorSound.play().catch(e => {});
+        return;
+      }
+
+      if (password === '1337') {
+        localStorage.setItem('auth', 'cookieXD43');
+        window.location.href = 'happy2.html';
+      } else if (password === '1234') {
+        password1234Attempts++;
+
+        if (password1234Attempts === 1) {
+          const loudGlitch = new Audio('177. Worm.Hit.mp3');
+          loudGlitch.volume = 1.0;
+          loudGlitch.play().catch(e => {});
+          rememberEl.classList.add('show');
+          setTimeout(() => rememberEl.classList.remove('show'), 5000);
+          passErrorEl.textContent = "ERROR 434";
+          errorSound.play().catch(e => {});
+        } else {
+          // === ВТОРОЙ РАЗ: КРАШ ===
+          isFrozen = true;
+          lagSound.play().catch(e => {});
+
+          // Giygas — через 10 секунд ПОСЛЕ НАЧАЛА КРАША
+          setTimeout(() => {
+            giygasSound.play().catch(e => {});
+          }, 10000);
+
+          // Фон → тёмно-серый
+          document.body.style.backgroundColor = '#2f2f2f';
+          document.body.style.filter = 'grayscale(100%) brightness(0.7)';
+          document.body.style.pointerEvents = 'none';
+          document.body.style.userSelect = 'none';
+          document.body.style.overflow = 'hidden';
+
+          // Картинка через 9.5 сек
+          setTimeout(() => {
+            if (!isFrozen) return;
+            what1img.style.display = 'block';
+
+            // Затемнение фона за 10 сек
+            darkenLayer.style.backgroundColor = 'rgba(0,0,0,0)';
+            darkenLayer.style.transition = 'background-color 10s linear';
+            darkenLayer.style.backgroundColor = 'rgba(0,0,0,1)';
+
+            // === ВЕЧНАЯ ТРЯСКА ===
+            setInterval(() => {
+              if (!isFrozen) return;
+              const intensity = 10;
+              const shift = (Math.random() - 0.5) * intensity;
+              what1img.style.transform = `translate(calc(-50% + ${shift}px), 0)`;
+              what1img.style.filter = `blur(${intensity * 0.08}px)`;
+              what1img.style.textShadow = `
+                ${intensity * 0.8}px 0 3px rgba(255,0,0,0.6),
+                ${-intensity * 0.8}px 0 3px rgba(0,255,0,0.6)
+              `;
+            }, 50);
+          }, 9500);
+        }
+      } else {
+        passErrorEl.textContent = "ERROR 434";
+        errorSound.play().catch(e => {});
+      }
+    }
+
+    // Глюки: каждые 40 сек, 40% шанс
+    function applyHardGlitch() {
+      if (isFrozen) return;
+      if (Math.random() < 0.4) {
+        const elements = document.querySelectorAll('.login-title, .error, .secret, button, input, #passwordPanel p');
+        const originals = [];
+        elements.forEach(el => {
+          originals.push({
+            el: el,
+            color: window.getComputedStyle(el).color,
+            transform: el.style.transform
+          });
+          const colors = ['#ff00ff', '#0f0'];
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const shift = Math.random() > 0.5 ? -8 : 8;
+          el.style.color = color;
+          el.style.transform = `translateX(${shift}px)`;
+          el.style.transition = 'none';
+        });
+        document.body.classList.add('artefact');
+        glitchSound.play().catch(e => {});
+        setTimeout(() => {
+          if (!isFrozen) {
+            originals.forEach(orig => {
+              orig.el.style.color = '';
+              orig.el.style.transform = '';
+              orig.el.style.transition = '';
+            });
+            document.body.classList.remove('artefact');
+          }
+        }, 100);
+      }
+    }
+
+    setInterval(applyHardGlitch, 40000);
+  </script>
+</body>
+</html>
