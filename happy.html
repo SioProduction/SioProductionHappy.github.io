@@ -219,7 +219,7 @@
 <body>
   <div class="content-wrapper">
     <div class="login-box">
-      <img src="smily1.jpg" alt="Смайлик" class="header-img" id="smileyImg" />
+      <img src="pic/smily1.jpg" alt="Смайлик" class="header-img" id="smileyImg" />
       <div class="login-title">Регистрация на сайт</div>
 
       <div class="input-area">
@@ -257,7 +257,7 @@
   <div id="remember"><span>В</span><span>С</span><span>П</span><span>О</span><span>М</span><span>Н</span><span>И</span></div>
 
   <div id="darkenLayer"></div>
-  <img id="what1img" src="what1.jpg" style="display: none;">
+  <img id="what1img" src="pic/what1.jpg" style="display: none;">
 
   <script>
     const targetUsername = "cookieXD43";
@@ -273,12 +273,12 @@
     const secretBlock = document.querySelector('.secret');
     const secretCode = document.getElementById('secretCode');
 
-    // Звуки
-    const errorSound = new Audio('169. Usb1.mp3');
-    const successSound = new Audio('170. Usb2.mp3');
-    const glitchSound = new Audio('177. Worm.Hit.mp3');
-    const lagSound = new Audio('FunnyTownOld.mp3.mp3');
-    const giygasSound = new Audio('Giygas Intro.mp3');
+    // Звуки — из папки audio/
+    const errorSound = new Audio('audio/169. Usb1.mp3');
+    const successSound = new Audio('audio/170. Usb2.mp3');
+    const glitchSound = new Audio('audio/177. Worm.Hit.mp3');
+    const lagSound = new Audio('audio/FunnyTownOld.mp3.mp3');
+    const giygasSound = new Audio('audio/Giygas Intro.mp3');
 
     errorSound.volume = 0.25;
     successSound.volume = 0.25;
@@ -294,7 +294,7 @@
     // Смайлик через минуту
     setTimeout(() => {
       if (!isFrozen) {
-        smileyImg.src = 'smily2.jpg';
+        smileyImg.src = 'pic/smily2.jpg';
         smileyImg.style.opacity = '0.8';
         setTimeout(() => {
           if (!isFrozen) smileyImg.style.opacity = '1';
@@ -302,12 +302,32 @@
       }
     }, 60000);
 
-    // === ПРОСТОЕ ИЗМЕНЕНИЕ ТЕКСТА (БЕЗ АНИМАЦИИ) ===
+    // === ИСКАЖЕНИЕ 1234? ПРИ НАВЕДЕНИИ ===
+    let glitchInterval = null;
     secretBlock.addEventListener('mouseenter', () => {
       secretCode.textContent = '1234?';
+      secretCode.style.opacity = '1';
+      secretCode.style.position = 'relative';
+      glitchInterval = setInterval(() => {
+        const shift = (Math.random() > 0.5 ? 4 : -4);
+        const colors = ['#ff00ff', '#00ff00'];
+        const color1 = colors[Math.floor(Math.random() * colors.length)];
+        const color2 = color1 === '#ff00ff' ? '#00ff00' : '#ff00ff';
+        secretCode.style.transform = `translateX(${shift}px)`;
+        secretCode.style.textShadow = `
+          ${-shift}px 0 2px ${color1},
+          ${shift * 2}px 0 2px ${color2}
+        `;
+        secretCode.style.filter = 'blur(0.5px)';
+      }, 400);
     });
     secretBlock.addEventListener('mouseleave', () => {
+      clearInterval(glitchInterval);
       secretCode.textContent = '1337';
+      secretCode.style.transform = '';
+      secretCode.style.textShadow = '';
+      secretCode.style.filter = '';
+      secretCode.style.opacity = '0.8';
     });
 
     usernameInput.addEventListener('input', function () {
@@ -340,7 +360,7 @@
       }
     }
 
-    // === АНИМАЦИЯ "ВСПОМНИ" (оставлена без изменений) ===
+    // === АНИМАЦИЯ "ВСПОМНИ" ===
     function animateRememberText() {
       const letters = rememberEl.querySelectorAll('span');
       const fonts = ['"Courier New", monospace', '"Lucida Console", monospace', '"Consolas", monospace', '"Monaco", monospace', '"Terminal", monospace', '"DejaVu Sans Mono", monospace'];
@@ -375,7 +395,7 @@
         password1234Attempts++;
 
         if (password1234Attempts === 1) {
-          const loudGlitch = new Audio('177. Worm.Hit.mp3');
+          const loudGlitch = new Audio('audio/177. Worm.Hit.mp3');
           loudGlitch.volume = 1.0;
           loudGlitch.play().catch(e => {});
           rememberEl.classList.add('show');
@@ -387,12 +407,11 @@
           isFrozen = true;
           lagSound.play().catch(e => {});
 
-          // Giygas — через 10 секунд ПОСЛЕ НАЧАЛА КРАША
+          // Giygas — через 10 сек после начала краша
           setTimeout(() => {
             giygasSound.play().catch(e => {});
           }, 10000);
 
-          // Фон → тёмно-серый
           document.body.style.backgroundColor = '#2f2f2f';
           document.body.style.filter = 'grayscale(100%) brightness(0.7)';
           document.body.style.pointerEvents = 'none';
@@ -404,12 +423,12 @@
             if (!isFrozen) return;
             what1img.style.display = 'block';
 
-            // Затемнение фона за 10 сек
+            // Затемнение 10 сек
             darkenLayer.style.backgroundColor = 'rgba(0,0,0,0)';
             darkenLayer.style.transition = 'background-color 10s linear';
             darkenLayer.style.backgroundColor = 'rgba(0,0,0,1)';
 
-            // === ВЕЧНАЯ ТРЯСКА ===
+            // Вечная тряска
             setInterval(() => {
               if (!isFrozen) return;
               const intensity = 10;
@@ -429,7 +448,7 @@
       }
     }
 
-    // Глюки: каждые 40 сек, 40% шанс
+    // Глюки: 40 сек, 40% шанс
     function applyHardGlitch() {
       if (isFrozen) return;
       if (Math.random() < 0.4) {
