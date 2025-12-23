@@ -22,7 +22,7 @@
       background-position: center;
       background-repeat: no-repeat;
     }
-    /* === Эффект CRT === */
+    /* === CRT эффект === */
     html::after {
       content: " ";
       display: block;
@@ -91,7 +91,6 @@
     }
     #text1 { width: 60%; max-width: 930px; height: auto; margin-bottom: 2rem; }
     #text2 { width: 40%; max-width: 530px; height: auto; margin-bottom: 2rem; }
-    /* Konsole */
     #console-header {
       position: relative;
       width: 90%;
@@ -171,7 +170,7 @@
       text-align: right;
     }
 
-    /* HAIII — только на блоке 1, под консолью */
+    /* HAIII — под консолью, по центру */
     #ha-img {
       margin-top: 2rem;
       max-width: 80vw;
@@ -213,27 +212,30 @@
       border-radius: 4px;
     }
 
-    /* Глаза и частицы */
+    /* === ГЛАЗА — СЛЕВА, КРУПНЕЕ === */
     .eyes-sequence {
       position: absolute;
-      right: 30px;
+      left: 30px;
       top: 50%;
       transform: translateY(-50%);
-      width: 64px;
-      height: 64px;
+      width: 128px;
+      height: 128px;
       z-index: 500;
       pointer-events: none;
+      opacity: 0;
     }
+
+    /* === ГУСТЫЕ ЧАСТИЦЫ === */
     .dust-particle {
       position: absolute;
       background: #000;
       border-radius: 50%;
-      opacity: 0.8;
+      opacity: 0.9;
       pointer-events: none;
       z-index: 501;
     }
 
-    /* Остальные стили (FAQ, Contact, стрелки — без изменений) */
+    /* Блоки */
     #faq-block, #contact-block {
       position: absolute;
       top: 50%;
@@ -490,52 +492,49 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // === Глаза + частицы ===
+    // === Глаза + густые частицы ===
     function showEyesSequence() {
-      // Создаём контейнер для глаз
       const eyes = document.createElement('img');
       eyes.className = 'eyes-sequence';
       eyes.style.opacity = '0';
       document.body.appendChild(eyes);
 
-      // Шаг 1: eyes1.png
       eyes.src = 'pic/eyes1.png';
       eyes.style.opacity = '1';
       setTimeout(() => {
-        // Шаг 2: eyes2.png
         eyes.src = 'pic/eyes2.png';
         setTimeout(() => {
-          // Шаг 3: eyes3.png
           eyes.src = 'pic/eyes3.png';
           setTimeout(() => {
-            // Удаляем глаза
             eyes.remove();
-            // Частицы
             spawnDustParticles();
-          }, 200);
-        }, 200);
-      }, 300);
+          }, 10);
+        }, 400);
+      }, 500);
     }
+
     function spawnDustParticles() {
-      const count = 25;
+      const count = 40;
       for (let i = 0; i < count; i++) {
         const p = document.createElement('div');
         p.className = 'dust-particle';
-        const size = 2 + Math.random() * 6;
+        const size = 4 + Math.random() * 10;
         p.style.width = size + 'px';
         p.style.height = size + 'px';
-        p.style.right = (30 + Math.random() * 50) + 'px';
-        p.style.top = (50 + (Math.random() - 0.5) * 100) + '%';
-        p.style.opacity = (0.4 + Math.random() * 0.6).toFixed(2);
+        p.style.left = (30 + Math.random() * 80) + 'px';
+        p.style.top = (50 + (Math.random() - 0.5) * 120) + '%';
+        p.style.opacity = (0.7 + Math.random() * 0.3).toFixed(2);
+
         document.body.appendChild(p);
-        // Анимация исчезновения
+
         const anim = p.animate([
           { transform: 'translateY(0) scale(1)', opacity: p.style.opacity },
-          { transform: `translateY(${(Math.random() - 0.5) * 100}px) scale(0)`, opacity: 0 }
+          { transform: `translateY(${(Math.random() - 0.3) * 150 - 40}px) scale(0)`, opacity: 0 }
         ], {
-          duration: 600 + Math.random() * 400,
-          easing: 'cubic-bezier(0.2, 0.8, 0.4, 1)'
+          duration: 1000 + Math.random() * 800,
+          easing: 'cubic-bezier(0.3, 0.9, 0.6, 1)'
         });
+
         anim.onfinish = () => p.remove();
       }
     }
@@ -588,7 +587,6 @@
           contactBlock.style.pointerEvents = 'none';
           arrowUp.classList.add('hidden');
           arrowDown.classList.remove('hidden');
-          // Проверка: если возвращаемся с блока 3
           if (wasOnBlock3) {
             wasOnBlock3 = false;
             setTimeout(showEyesSequence, 100);
