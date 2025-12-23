@@ -22,7 +22,7 @@
       background-position: center;
       background-repeat: no-repeat;
     }
-    /* === CRT эффект === */
+    /* CRT */
     html::after {
       content: " ";
       display: block;
@@ -170,7 +170,7 @@
       text-align: right;
     }
 
-    /* HAIII — под консолью, по центру */
+    /* HAIII */
     #ha-img {
       margin-top: 2rem;
       max-width: 80vw;
@@ -212,7 +212,7 @@
       border-radius: 4px;
     }
 
-    /* === ГЛАЗА — СЛЕВА, КРУПНЕЕ === */
+    /* Глаза */
     .eyes-sequence {
       position: absolute;
       left: 30px;
@@ -221,21 +221,23 @@
       width: 128px;
       height: 128px;
       z-index: 500;
-      pointer-events: none;
-      opacity: 0;
+      pointer-events: auto;
     }
 
-    /* === ГУСТЫЕ ЧАСТИЦЫ === */
-    .dust-particle {
+    /* Символ '?' */
+    .eye-placeholder {
       position: absolute;
-      background: #000;
-      border-radius: 50%;
-      opacity: 0.9;
+      left: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Courier New', monospace;
+      font-size: 24px;
+      color: #000;
+      z-index: 502;
       pointer-events: none;
-      z-index: 501;
     }
 
-    /* Блоки */
+    /* FAQ / Contact */
     #faq-block, #contact-block {
       position: absolute;
       top: 50%;
@@ -344,6 +346,8 @@
       .contact-right { align-items: center; }
       #register-text { max-width: 90%; text-align: center; }
     }
+
+    /* Стрелки */
     .nav-arrow {
       position: absolute;
       width: 50px;
@@ -384,11 +388,15 @@
   </style>
 </head>
 <body>
-  <!-- Музыкальный плеер -->
+  <!-- Музыка -->
   <div id="music-controls">
     <img src="pic/musicplayer.jpg" id="music-btn" alt="Play Music" />
     <input type="number" id="volume-input" min="0" max="100" value="80" />
   </div>
+
+  <!-- Звук ошибки -->
+  <audio id="error-sound" src="audio/059. Error.mp3"></audio>
+  <audio id="bg-music" src="audio/15. Still Alive (Radio Mix Clean).mp3" loop></audio>
 
   <div id="fade-overlay"></div>
   <div id="content">
@@ -460,9 +468,6 @@
   <div class="nav-arrow" id="arrow-down">↓</div>
   <div class="nav-arrow hidden" id="arrow-up">↑</div>
 
-  <!-- Аудио -->
-  <audio id="bg-music" src="audio/15. Still Alive (Radio Mix Clean).mp3" loop></audio>
-
   <script>
     // === Текст и часы ===
     const fullText = `### Poisoned Vessel of Hygieia — проект, созданный в Minecraft за авторством Sio@SioProduction.
@@ -492,51 +497,31 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // === Глаза + густые частицы ===
+    // === Глаза и звук ===
+    let hasShownEyes = false;
     function showEyesSequence() {
+      if (hasShownEyes) return;
+      hasShownEyes = true;
+
       const eyes = document.createElement('img');
       eyes.className = 'eyes-sequence';
-      eyes.style.opacity = '0';
+      eyes.src = 'pic/eyes1.png';
       document.body.appendChild(eyes);
 
-      eyes.src = 'pic/eyes1.png';
-      eyes.style.opacity = '1';
-      setTimeout(() => {
-        eyes.src = 'pic/eyes2.png';
-        setTimeout(() => {
-          eyes.src = 'pic/eyes3.png';
-          setTimeout(() => {
-            eyes.remove();
-            spawnDustParticles();
-          }, 10);
-        }, 400);
-      }, 500);
-    }
+      setTimeout(() => eyes.src = 'pic/eyes2.png', 500);
+      setTimeout(() => eyes.src = 'pic/eyes3.png', 900);
+      setTimeout(() => eyes.remove(), 910);
 
-    function spawnDustParticles() {
-      const count = 40;
-      for (let i = 0; i < count; i++) {
-        const p = document.createElement('div');
-        p.className = 'dust-particle';
-        const size = 4 + Math.random() * 10;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        p.style.left = (30 + Math.random() * 80) + 'px';
-        p.style.top = (50 + (Math.random() - 0.5) * 120) + '%';
-        p.style.opacity = (0.7 + Math.random() * 0.3).toFixed(2);
+      eyes.addEventListener('click', () => {
+        const errorSound = document.getElementById('error-sound');
+        errorSound.currentTime = 0;
+        errorSound.play().catch(e => console.log("Error sound failed:", e));
 
-        document.body.appendChild(p);
-
-        const anim = p.animate([
-          { transform: 'translateY(0) scale(1)', opacity: p.style.opacity },
-          { transform: `translateY(${(Math.random() - 0.3) * 150 - 40}px) scale(0)`, opacity: 0 }
-        ], {
-          duration: 1000 + Math.random() * 800,
-          easing: 'cubic-bezier(0.3, 0.9, 0.6, 1)'
-        });
-
-        anim.onfinish = () => p.remove();
-      }
+        const placeholder = document.createElement('div');
+        placeholder.className = 'eye-placeholder';
+        placeholder.textContent = '?';
+        document.body.appendChild(placeholder);
+      });
     }
 
     // === Музыка ===
@@ -600,6 +585,9 @@
           contactBlock.style.pointerEvents = 'none';
           arrowUp.classList.remove('hidden');
           arrowDown.classList.remove('hidden');
+          // Удалить символ '?'
+          const placeholder = document.querySelector('.eye-placeholder');
+          if (placeholder) placeholder.remove();
         } else if (blockNum === 3) {
           body.style.backgroundImage = "url('pic/fon3.png')";
           content.style.opacity = '0';
@@ -631,6 +619,35 @@
 
     window.addEventListener('load', () => {
       setTimeout(typeText, 800);
+      // Доп. эффекты
+      setInterval(() => {
+        const el = document.getElementById('register-text');
+        if (!el) return;
+        const colors = ['#00ff88', '#ff44aa', '#ffffff', '#005522'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const fonts = ['monospace', 'Courier New', 'Impact', 'Arial'];
+        const font = fonts[Math.floor(Math.random() * fonts.length)];
+        const fontWeight = Math.random() > 0.5 ? 'bold' : 'normal';
+        const italic = Math.random() > 0.7 ? 'italic' : 'normal';
+        const rotate = (Math.random() - 0.5) * 6;
+        const skew = (Math.random() - 0.5) * 4;
+        el.style.color = color;
+        el.style.fontFamily = font;
+        el.style.fontWeight = fontWeight;
+        el.style.fontStyle = italic;
+        el.style.transform = `rotate(${rotate}deg) skew(${skew}deg)`;
+        el.style.textShadow = `0 0 8px ${color}80`;
+        el.style.letterSpacing = `${(Math.random() - 0.5) * 2}px`;
+        setTimeout(() => {
+          el.style.color = '#fff';
+          el.style.fontFamily = 'Arial, sans-serif';
+          el.style.fontWeight = 'normal';
+          el.style.fontStyle = 'normal';
+          el.style.transform = 'rotate(0deg) skew(0deg)';
+          el.style.textShadow = 'none';
+          el.style.letterSpacing = '0';
+        }, 200);
+      }, 5000);
     });
   </script>
 </body>
