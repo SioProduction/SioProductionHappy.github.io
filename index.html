@@ -212,7 +212,7 @@
       border-radius: 4px;
     }
 
-    /* Глаза */
+    /* Глаз */
     .eyes-sequence {
       position: absolute;
       left: 30px;
@@ -224,10 +224,10 @@
       pointer-events: auto;
     }
 
-    /* Символ '?' */
+    /* Знак "?" — сдвиг +20px вправо */
     .eye-placeholder {
       position: absolute;
-      left: 30px;
+      left: 50px; /* 30 + 20 = 50 */
       top: 50%;
       transform: translateY(-50%);
       font-family: 'Courier New', monospace;
@@ -237,7 +237,17 @@
       pointer-events: none;
     }
 
-    /* FAQ / Contact */
+    /* Частицы — восстановлены */
+    .dust-particle {
+      position: absolute;
+      background: #000;
+      border-radius: 50%;
+      opacity: 0.9;
+      pointer-events: none;
+      z-index: 501;
+    }
+
+    /* Блоки */
     #faq-block, #contact-block {
       position: absolute;
       top: 50%;
@@ -309,6 +319,12 @@
       margin-bottom: 1rem;
       color: #00ccff;
     }
+    .contact-links a {
+      color: #4ccfff;
+      text-decoration: underline;
+      display: block;
+      margin: 4px 0;
+    }
     .contact-right {
       display: flex;
       flex-direction: column;
@@ -346,8 +362,6 @@
       .contact-right { align-items: center; }
       #register-text { max-width: 90%; text-align: center; }
     }
-
-    /* Стрелки */
     .nav-arrow {
       position: absolute;
       width: 50px;
@@ -394,7 +408,7 @@
     <input type="number" id="volume-input" min="0" max="100" value="80" />
   </div>
 
-  <!-- Звук ошибки -->
+  <!-- Аудио -->
   <audio id="error-sound" src="audio/059. Error.mp3"></audio>
   <audio id="bg-music" src="audio/15. Still Alive (Radio Mix Clean).mp3" loop></audio>
 
@@ -416,7 +430,6 @@
         <div class="console-footer">© 2025 SioProduction — All Rights Reserved</div>
       </div>
     </div>
-    <!-- HAIII -->
     <img src="pic/HAIII.webp" id="ha-img" alt="HAIII" />
   </div>
 
@@ -450,11 +463,11 @@
     <div class="contact-text">
       <div class="contact-title">Связь с автором:</div>
       <div class="contact-links">
-        https://www.youtube.com/@Sio12Sav  <br>
-        https://t.me/oneAItsjustaburningmemory  <br>
-        basedpohtasio@gmail.com<br>
-        TG: @Marisadru<br>
-        Discord: siosav
+        <a href="https://www.youtube.com/@Sio12Sav" target="_blank">YouTube: @Sio12Sav</a>
+        <a href="https://t.me/oneAItsjustaburningmemory" target="_blank">Telegram Channel</a>
+        <a href="mailto:basedpohtasio@gmail.com">Email: basedpohtasio@gmail.com</a>
+        <a href="tg://resolve?domain=Marisadru">Telegram: @Marisadru</a>
+        <span>Discord: siosav</span>
       </div>
     </div>
     <div class="contact-right">
@@ -469,7 +482,7 @@
   <div class="nav-arrow hidden" id="arrow-up">↑</div>
 
   <script>
-    // === Текст и часы ===
+    // Текст и часы
     const fullText = `### Poisoned Vessel of Hygieia — проект, созданный в Minecraft за авторством Sio@SioProduction.
 Начиная с 2025 года в одиночку и по сей день.`;
     const output = document.getElementById('typing-output');
@@ -497,7 +510,7 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // === Глаза и звук ===
+    // Глаз + частицы + знак "?"
     let hasShownEyes = false;
     function showEyesSequence() {
       if (hasShownEyes) return;
@@ -510,12 +523,15 @@
 
       setTimeout(() => eyes.src = 'pic/eyes2.png', 500);
       setTimeout(() => eyes.src = 'pic/eyes3.png', 900);
-      setTimeout(() => eyes.remove(), 910);
+      setTimeout(() => {
+        eyes.remove();
+        spawnDustParticles();
+      }, 910);
 
       eyes.addEventListener('click', () => {
         const errorSound = document.getElementById('error-sound');
         errorSound.currentTime = 0;
-        errorSound.play().catch(e => console.log("Error sound failed:", e));
+        errorSound.play().catch(e => console.log("Sound play failed:", e));
 
         const placeholder = document.createElement('div');
         placeholder.className = 'eye-placeholder';
@@ -524,7 +540,31 @@
       });
     }
 
-    // === Музыка ===
+    function spawnDustParticles() {
+      const count = 40;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'dust-particle';
+        const size = 4 + Math.random() * 10;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = (30 + Math.random() * 80) + 'px';
+        p.style.top = (50 + (Math.random() - 0.5) * 120) + '%';
+        p.style.opacity = (0.7 + Math.random() * 0.3).toFixed(2);
+        document.body.appendChild(p);
+
+        const anim = p.animate([
+          { transform: 'translateY(0) scale(1)', opacity: p.style.opacity },
+          { transform: `translateY(${(Math.random() - 0.3) * 150 - 40}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000 + Math.random() * 800,
+          easing: 'cubic-bezier(0.3, 0.9, 0.6, 1)'
+        });
+        anim.onfinish = () => p.remove();
+      }
+    }
+
+    // Музыка
     const musicBtn = document.getElementById('music-btn');
     const audio = document.getElementById('bg-music');
     const volumeInput = document.getElementById('volume-input');
@@ -543,7 +583,7 @@
       audio.volume = val / 100;
     });
 
-    // === Навигация ===
+    // Навигация
     const body = document.body;
     const overlay = document.getElementById('fade-overlay');
     const content = document.getElementById('content');
@@ -585,7 +625,8 @@
           contactBlock.style.pointerEvents = 'none';
           arrowUp.classList.remove('hidden');
           arrowDown.classList.remove('hidden');
-          // Удалить символ '?'
+
+          // Удалить знак "?"
           const placeholder = document.querySelector('.eye-placeholder');
           if (placeholder) placeholder.remove();
         } else if (blockNum === 3) {
@@ -619,7 +660,6 @@
 
     window.addEventListener('load', () => {
       setTimeout(typeText, 800);
-      // Доп. эффекты
       setInterval(() => {
         const el = document.getElementById('register-text');
         if (!el) return;
