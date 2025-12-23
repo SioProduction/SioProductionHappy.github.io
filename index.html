@@ -22,7 +22,7 @@
       background-position: center;
       background-repeat: no-repeat;
     }
-    /* === Эффект старого монитора (CRT) === */
+    /* === Эффект CRT === */
     html::after {
       content: " ";
       display: block;
@@ -51,7 +51,6 @@
       background-size: 100% 2px, 3px 100%;
       pointer-events: none;
     }
-    /* Оверлей для затемнения */
     #fade-overlay {
       position: fixed;
       top: 0;
@@ -68,7 +67,6 @@
       opacity: 1;
       pointer-events: auto;
     }
-    /* Контент — сверху по центру */
     #content {
       position: absolute;
       top: 80px;
@@ -91,19 +89,9 @@
       70% { transform: translateY(-3px); }
       100% { opacity: 1; transform: translateY(0); }
     }
-    #text1 {
-      width: 60%;
-      max-width: 930px;
-      height: auto;
-      margin-bottom: 2rem;
-    }
-    #text2 {
-      width: 40%;
-      max-width: 530px;
-      height: auto;
-      margin-bottom: 2rem;
-    }
-    /* Заголовок Konsole — над окном */
+    #text1 { width: 60%; max-width: 930px; height: auto; margin-bottom: 2rem; }
+    #text2 { width: 40%; max-width: 530px; height: auto; margin-bottom: 2rem; }
+    /* Konsole */
     #console-header {
       position: relative;
       width: 90%;
@@ -125,10 +113,8 @@
       letter-spacing: 1px;
       color: #00ccff;
       font-size: 16px;
-      position: relative;
       z-index: 2;
     }
-    /* RootConsole */
     .console-panel {
       position: relative;
       margin-top: 0;
@@ -137,12 +123,9 @@
       padding: 1.6rem;
       background: rgba(0, 0, 0, 0.85);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       border-radius: 0 0 14px 14px;
       border: 1px solid rgba(0, 150, 255, 0.4);
-      box-shadow:
-        inset 0 0 16px rgba(0, 150, 255, 0.2),
-        0 4px 20px rgba(0, 0, 0, 0.4);
+      box-shadow: inset 0 0 16px rgba(0, 150, 255, 0.2), 0 4px 20px rgba(0, 0, 0, 0.4);
       font-family: 'Courier New', monospace;
       color: #00ff88;
       line-height: 1.6;
@@ -188,33 +171,70 @@
       text-align: right;
     }
 
-    /* === HAIII.webp — внутри контента, но чуть ниже консоли === */
+    /* HAIII — только на блоке 1, под консолью */
     #ha-img {
-      margin-top: 2rem; /* отступ от консоли */
+      margin-top: 2rem;
       max-width: 80vw;
       height: auto;
       opacity: 0;
       animation: fadeInFloat 1s ease-out 1.2s forwards;
     }
 
-    /* === Кнопка музыки === */
-    #music-btn {
+    /* Музыка */
+    #music-controls {
       position: absolute;
       top: 20px;
       right: 20px;
-      width: 368px; /* 736 / 2 */
-      height: 368px;
-      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
       z-index: 200;
+    }
+    #music-btn {
+      width: 184px;
+      height: 184px;
+      cursor: pointer;
       opacity: 0.9;
       transition: opacity 0.2s ease;
     }
     #music-btn:hover {
       opacity: 1;
     }
+    #volume-input {
+      width: 80px;
+      margin-top: 8px;
+      padding: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      text-align: center;
+      background: rgba(0,0,0,0.7);
+      color: #00ffcc;
+      border: 1px solid #00ccff;
+      border-radius: 4px;
+    }
 
-    /* FAQ */
-    #faq-block {
+    /* Глаза и частицы */
+    .eyes-sequence {
+      position: absolute;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 64px;
+      height: 64px;
+      z-index: 500;
+      pointer-events: none;
+    }
+    .dust-particle {
+      position: absolute;
+      background: #000;
+      border-radius: 50%;
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: 501;
+    }
+
+    /* Остальные стили (FAQ, Contact, стрелки — без изменений) */
+    #faq-block, #contact-block {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -222,6 +242,15 @@
       width: 90%;
       max-width: 1200px;
       padding: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    #faq-block.active, #contact-block.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #faq-block {
       background: #f0f0f0;
       border: 1px solid #ccc;
       border-radius: 8px;
@@ -230,22 +259,10 @@
       color: #000;
       line-height: 1.6;
       font-size: 14px;
-      overflow: hidden;
-      z-index: 10;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      pointer-events: none;
       display: flex;
       gap: 2rem;
     }
-    #faq-block.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .faq-text {
-      flex: 1;
-      min-width: 300px;
-    }
+    .faq-text { flex: 1; min-width: 300px; }
     .faq-title {
       font-weight: bold;
       margin-bottom: 1rem;
@@ -256,30 +273,11 @@
       align-items: center;
       gap: 0.5rem;
     }
-    .faq-icon {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
-    }
-    .faq-item {
-      margin-bottom: 1rem;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-    .faq-question {
-      font-weight: bold;
-      color: #0066cc;
-    }
-    .faq-answer {
-      margin-top: 0.5rem;
-      color: #333;
-    }
-    .kryto-container {
-      display: flex;
-      gap: 0.8rem;
-      max-width: 620px;
-    }
+    .faq-icon { width: 80px; height: 80px; object-fit: contain; }
+    .faq-item { margin-bottom: 1rem; font-size: 14px; line-height: 1.7; }
+    .faq-question { font-weight: bold; color: #0066cc; }
+    .faq-answer { margin-top: 0.5rem; color: #333; }
+    .kryto-container { display: flex; gap: 0.8rem; max-width: 620px; }
     .kryto-image {
       width: 200px;
       aspect-ratio: 3/2;
@@ -288,26 +286,11 @@
       border: 1px solid #999;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
-    /* Третий блок */
     #contact-block {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90%;
-      max-width: 1200px;
-      padding: 2rem;
       background: #000;
       border-radius: 12px;
       display: flex;
       gap: 2rem;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      pointer-events: none;
-    }
-    #contact-block.active {
-      opacity: 1;
-      pointer-events: auto;
     }
     .contact-text {
       flex: 1;
@@ -322,22 +305,14 @@
       margin-bottom: 1rem;
       color: #00ccff;
     }
-    .contact-links {
-      margin-bottom: 1rem;
-    }
     .contact-right {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       gap: 1rem;
     }
-    .contact-image-link {
-      display: block;
-      width: fit-content;
-    }
-    .contact-image-link:hover {
-      opacity: 0.9;
-    }
+    .contact-image-link { display: block; width: fit-content; }
+    .contact-image-link:hover { opacity: 0.9; }
     .contact-image {
       width: 500px;
       height: 569px;
@@ -354,19 +329,9 @@
       max-width: 500px;
       transition: all 0.1s ease;
     }
-    /* Адаптив */
     @media (max-width: 1300px) {
-      .contact-image {
-        width: 350px;
-        height: auto;
-      }
-      #register-text {
-        max-width: 350px;
-      }
-      #music-btn {
-        width: 280px;
-        height: 280px;
-      }
+      .contact-image { width: 350px; height: auto; }
+      #register-text { max-width: 350px; }
     }
     @media (max-width: 900px) {
       #contact-block, #faq-block {
@@ -374,21 +339,9 @@
         align-items: center;
         text-align: center;
       }
-      .contact-right {
-        align-items: center;
-      }
-      #register-text {
-        max-width: 90%;
-        text-align: center;
-      }
-      #music-btn {
-        width: 200px;
-        height: 200px;
-        top: 10px;
-        right: 10px;
-      }
+      .contact-right { align-items: center; }
+      #register-text { max-width: 90%; text-align: center; }
     }
-    /* Стрелки */
     .nav-arrow {
       position: absolute;
       width: 50px;
@@ -429,8 +382,11 @@
   </style>
 </head>
 <body>
-  <!-- Музыкальная кнопка -->
-  <img src="pic/musicplayer.jpg" id="music-btn" alt="Music Player" />
+  <!-- Музыкальный плеер -->
+  <div id="music-controls">
+    <img src="pic/musicplayer.jpg" id="music-btn" alt="Play Music" />
+    <input type="number" id="volume-input" min="0" max="100" value="80" />
+  </div>
 
   <div id="fade-overlay"></div>
   <div id="content">
@@ -450,7 +406,7 @@
         <div class="console-footer">© 2025 SioProduction — All Rights Reserved</div>
       </div>
     </div>
-    <!-- HAIII.webp ПРЯМО ПОД КОНСОЛЬЮ, В ЦЕНТРЕ -->
+    <!-- HAIII -->
     <img src="pic/HAIII.webp" id="ha-img" alt="HAIII" />
   </div>
 
@@ -502,10 +458,11 @@
   <div class="nav-arrow" id="arrow-down">↓</div>
   <div class="nav-arrow hidden" id="arrow-up">↑</div>
 
-  <!-- Скрытый аудио-элемент -->
-  <audio id="bg-music" src="audio/15. Still Alive (Radio Mix Clean).mp3"></audio>
+  <!-- Аудио -->
+  <audio id="bg-music" src="audio/15. Still Alive (Radio Mix Clean).mp3" loop></audio>
 
   <script>
+    // === Текст и часы ===
     const fullText = `### Poisoned Vessel of Hygieia — проект, созданный в Minecraft за авторством Sio@SioProduction.
 Начиная с 2025 года в одиночку и по сей день.`;
     const output = document.getElementById('typing-output');
@@ -517,7 +474,6 @@
         setTimeout(typeText, 20);
       }
     }
-
     const clockElement = document.getElementById('clock');
     const startTime = new Date('2025-03-20T00:00:00');
     function updateClock() {
@@ -534,41 +490,61 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // === ГЛЮК-ЭФФЕКТ ДЛЯ ТЕКСТА РЕГИСТРАЦИИ ===
-    function glitchRegisterText() {
-      const el = document.getElementById('register-text');
-      if (!el) return;
-      const colors = ['#00ff88', '#ff44aa', '#ffffff', '#005522'];
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const fonts = ['monospace', 'Courier New', 'Impact', 'Arial'];
-      const font = fonts[Math.floor(Math.random() * fonts.length)];
-      const fontWeight = Math.random() > 0.5 ? 'bold' : 'normal';
-      const italic = Math.random() > 0.7 ? 'italic' : 'normal';
-      const rotate = (Math.random() - 0.5) * 6;
-      const skew = (Math.random() - 0.5) * 4;
-      el.style.color = color;
-      el.style.fontFamily = font;
-      el.style.fontWeight = fontWeight;
-      el.style.fontStyle = italic;
-      el.style.transform = `rotate(${rotate}deg) skew(${skew}deg)`;
-      el.style.textShadow = `0 0 8px ${color}80`;
-      el.style.letterSpacing = `${(Math.random() - 0.5) * 2}px`;
-      setTimeout(() => {
-        el.style.color = '#fff';
-        el.style.fontFamily = 'Arial, sans-serif';
-        el.style.fontWeight = 'normal';
-        el.style.fontStyle = 'normal';
-        el.style.transform = 'rotate(0deg) skew(0deg)';
-        el.style.textShadow = 'none';
-        el.style.letterSpacing = '0';
-      }, 200);
-    }
-    setInterval(glitchRegisterText, 5000);
-    setTimeout(glitchRegisterText, 5000);
+    // === Глаза + частицы ===
+    function showEyesSequence() {
+      // Создаём контейнер для глаз
+      const eyes = document.createElement('img');
+      eyes.className = 'eyes-sequence';
+      eyes.style.opacity = '0';
+      document.body.appendChild(eyes);
 
-    // === МУЗЫКА ===
+      // Шаг 1: eyes1.png
+      eyes.src = 'pic/eyes1.png';
+      eyes.style.opacity = '1';
+      setTimeout(() => {
+        // Шаг 2: eyes2.png
+        eyes.src = 'pic/eyes2.png';
+        setTimeout(() => {
+          // Шаг 3: eyes3.png
+          eyes.src = 'pic/eyes3.png';
+          setTimeout(() => {
+            // Удаляем глаза
+            eyes.remove();
+            // Частицы
+            spawnDustParticles();
+          }, 200);
+        }, 200);
+      }, 300);
+    }
+    function spawnDustParticles() {
+      const count = 25;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'dust-particle';
+        const size = 2 + Math.random() * 6;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.right = (30 + Math.random() * 50) + 'px';
+        p.style.top = (50 + (Math.random() - 0.5) * 100) + '%';
+        p.style.opacity = (0.4 + Math.random() * 0.6).toFixed(2);
+        document.body.appendChild(p);
+        // Анимация исчезновения
+        const anim = p.animate([
+          { transform: 'translateY(0) scale(1)', opacity: p.style.opacity },
+          { transform: `translateY(${(Math.random() - 0.5) * 100}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 600 + Math.random() * 400,
+          easing: 'cubic-bezier(0.2, 0.8, 0.4, 1)'
+        });
+        anim.onfinish = () => p.remove();
+      }
+    }
+
+    // === Музыка ===
     const musicBtn = document.getElementById('music-btn');
     const audio = document.getElementById('bg-music');
+    const volumeInput = document.getElementById('volume-input');
+    audio.volume = 0.8;
     musicBtn.addEventListener('click', () => {
       if (audio.paused) {
         audio.play().catch(e => console.log("Autoplay blocked:", e));
@@ -576,8 +552,14 @@
         audio.pause();
       }
     });
+    volumeInput.addEventListener('input', () => {
+      let val = parseInt(volumeInput.value) || 0;
+      val = Math.min(100, Math.max(0, val));
+      volumeInput.value = val;
+      audio.volume = val / 100;
+    });
 
-    // === НАВИГАЦИЯ ===
+    // === Навигация ===
     const body = document.body;
     const overlay = document.getElementById('fade-overlay');
     const content = document.getElementById('content');
@@ -586,6 +568,7 @@
     const faqBlock = document.getElementById('faq-block');
     const contactBlock = document.getElementById('contact-block');
     let currentBlock = 1;
+    let wasOnBlock3 = false;
 
     function fadeOut() {
       overlay.classList.add('active');
@@ -605,6 +588,11 @@
           contactBlock.style.pointerEvents = 'none';
           arrowUp.classList.add('hidden');
           arrowDown.classList.remove('hidden');
+          // Проверка: если возвращаемся с блока 3
+          if (wasOnBlock3) {
+            wasOnBlock3 = false;
+            setTimeout(showEyesSequence, 100);
+          }
         } else if (blockNum === 2) {
           body.style.backgroundImage = "url('pic/fon2.png')";
           content.style.opacity = '0';
@@ -623,6 +611,7 @@
           contactBlock.style.pointerEvents = 'auto';
           arrowUp.classList.remove('hidden');
           arrowDown.classList.add('hidden');
+          wasOnBlock3 = true;
         }
         currentBlock = blockNum;
         setTimeout(fadeIn, 300);
