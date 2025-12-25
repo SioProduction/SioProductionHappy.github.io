@@ -11,32 +11,40 @@
       box-sizing: border-box;
     }
 
-    body {
-      background-color: #208C71;
+    /* === ОСНОВНОЙ КОНТЕЙНЕР ДЛЯ ВСЕГО — ВКЛЮЧАЯ РАМКИ === */
+    #rootContainer {
       position: relative;
-      font-family: "Terminal", "Courier New", monospace;
-      color: #000;
+      width: 100vw;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* Чёрные полосы по бокам */
-    body::before,
-    body::after {
-      content: "";
+    /* === ЧЁРНЫЕ РАМКИ — НАСТОЯЩИЕ ЭЛЕМЕНТЫ === */
+    .side-border {
       position: fixed;
       top: 0;
       width: 120px;
       height: 100vh;
       background: #000;
       z-index: 10;
+      pointer-events: none; /* чтобы не мешали кликам */
     }
-    body::before { left: 0; }
-    body::after { right: 0; }
+    #leftBorder { left: 0; }
+    #rightBorder { right: 0; }
+
+    body {
+      background-color: #208C71;
+      font-family: "Terminal", "Courier New", monospace;
+      color: #000;
+      overflow-x: hidden;
+    }
 
     .content-wrapper {
       margin: 0 120px;
       min-height: 8000px;
       padding-top: 120px;
       position: relative;
+      z-index: 5;
     }
 
     .login-box {
@@ -217,40 +225,46 @@
   </style>
 </head>
 <body>
-  <div class="content-wrapper">
-    <div class="login-box">
-      <img src="pic/smily1.jpg" alt="Смайлик" class="header-img" id="smileyImg" />
-      <div class="login-title">Регистрация на сайт</div>
+  <!-- === РАМКИ СНАРУЖИ КОНТЕНТА — НО ВНУТРИ BODY === -->
+  <div id="leftBorder" class="side-border"></div>
+  <div id="rightBorder" class="side-border"></div>
 
-      <div class="input-area">
-        <input
-          type="text"
-          id="usernameInput"
-          placeholder="Имя пользователя..."
-          maxlength="12"
-          onkeydown="if(event.key === 'Enter') tryShowPassword()"
-        />
-        <button onclick="tryShowPassword()">Продолжить</button>
-        <div id="userError" class="error"></div>
+  <div id="rootContainer">
+    <div class="content-wrapper">
+      <div class="login-box">
+        <img src="pic/smily1.jpg" alt="Смайлик" class="header-img" id="smileyImg" />
+        <div class="login-title">Регистрация на сайт</div>
+
+        <div class="input-area">
+          <input
+            type="text"
+            id="usernameInput"
+            placeholder="Имя пользователя..."
+            maxlength="12"
+            onkeydown="if(event.key === 'Enter') tryShowPassword()"
+          />
+          <button onclick="tryShowPassword()">Продолжить</button>
+          <div id="userError" class="error"></div>
+        </div>
       </div>
-    </div>
 
-    <div id="passwordPanel">
-      <p>Введите пароль:</p>
-      <input
-        type="password"
-        id="passwordInput"
-        placeholder="Пароль"
-        maxlength="4"
-        onkeydown="if(event.key === 'Enter') checkPassword()"
-      />
-      <br />
-      <button onclick="checkPassword()">Войти</button>
-      <div id="passError" class="error"></div>
-    </div>
+      <div id="passwordPanel">
+        <p>Введите пароль:</p>
+        <input
+          type="password"
+          id="passwordInput"
+          placeholder="Пароль"
+          maxlength="4"
+          onkeydown="if(event.key === 'Enter') checkPassword()"
+        />
+        <br />
+        <button onclick="checkPassword()">Войти</button>
+        <div id="passError" class="error"></div>
+      </div>
 
-    <div class="secret">
-      Кстати! Наш самый частый пароль:| <span id="secretCode">1337</span> | XD Интересно почему???
+      <div class="secret">
+        Кстати! Наш самый частый пароль:| <span id="secretCode">1337</span> | XD Интересно почему???
+      </div>
     </div>
   </div>
 
@@ -291,7 +305,6 @@
     let password1234Attempts = 0;
     let isFrozen = false;
 
-    // Смайлик через минуту
     setTimeout(() => {
       if (!isFrozen) {
         smileyImg.src = 'pic/smily2.jpg';
@@ -302,12 +315,10 @@
       }
     }, 60000);
 
-    // === ИСКАЖЕНИЕ 1234? ПРИ НАВЕДЕНИИ ===
     let glitchInterval = null;
     secretBlock.addEventListener('mouseenter', () => {
       secretCode.textContent = '1234?';
       secretCode.style.opacity = '1';
-      secretCode.style.position = 'relative';
       glitchInterval = setInterval(() => {
         const shift = (Math.random() > 0.5 ? 4 : -4);
         const colors = ['#ff00ff', '#00ff00'];
@@ -360,7 +371,6 @@
       }
     }
 
-    // === АНИМАЦИЯ "ВСПОМНИ" ===
     function animateRememberText() {
       const letters = rememberEl.querySelectorAll('span');
       const fonts = ['"Courier New", monospace', '"Lucida Console", monospace', '"Consolas", monospace', '"Monaco", monospace', '"Terminal", monospace', '"DejaVu Sans Mono", monospace'];
@@ -403,42 +413,34 @@
           passErrorEl.textContent = "ERROR 434";
           errorSound.play().catch(e => {});
         } else {
-          // === ВТОРОЙ РАЗ: КРАШ ===
           isFrozen = true;
           lagSound.play().catch(e => {});
 
-          // Giygas — через 10 сек после начала краша
           setTimeout(() => {
             giygasSound.play().catch(e => {});
           }, 10000);
 
-          document.body.style.backgroundColor = '#2f2f2f';
-          document.body.style.filter = 'grayscale(100%) brightness(0.7)';
-          document.body.style.pointerEvents = 'none';
-          document.body.style.userSelect = 'none';
-          document.body.style.overflow = 'hidden';
+          // === ВАЖНО: НЕ ТРОГАЕМ BODY! ===
+          document.getElementById('rootContainer').style.backgroundColor = '#2f2f2f';
+          document.getElementById('rootContainer').style.filter = 'grayscale(100%) brightness(0.7)';
+          document.getElementById('rootContainer').style.pointerEvents = 'none';
+          document.getElementById('rootContainer').style.userSelect = 'none';
+          // НЕ скрываем overflow — рамки останутся!
 
-          // Картинка через 9.5 сек
           setTimeout(() => {
             if (!isFrozen) return;
             what1img.style.display = 'block';
 
-            // Затемнение 10 сек
             darkenLayer.style.backgroundColor = 'rgba(0,0,0,0)';
             darkenLayer.style.transition = 'background-color 10s linear';
             darkenLayer.style.backgroundColor = 'rgba(0,0,0,1)';
 
-            // Вечная тряска
             setInterval(() => {
               if (!isFrozen) return;
               const intensity = 10;
               const shift = (Math.random() - 0.5) * intensity;
               what1img.style.transform = `translate(calc(-50% + ${shift}px), 0)`;
               what1img.style.filter = `blur(${intensity * 0.08}px)`;
-              what1img.style.textShadow = `
-                ${intensity * 0.8}px 0 3px rgba(255,0,0,0.6),
-                ${-intensity * 0.8}px 0 3px rgba(0,255,0,0.6)
-              `;
             }, 50);
           }, 9500);
         }
@@ -448,7 +450,6 @@
       }
     }
 
-    // Глюки: 40 сек, 40% шанс
     function applyHardGlitch() {
       if (isFrozen) return;
       if (Math.random() < 0.4) {
@@ -467,7 +468,6 @@
           el.style.transform = `translateX(${shift}px)`;
           el.style.transition = 'none';
         });
-        document.body.classList.add('artefact');
         glitchSound.play().catch(e => {});
         setTimeout(() => {
           if (!isFrozen) {
@@ -476,7 +476,6 @@
               orig.el.style.transform = '';
               orig.el.style.transition = '';
             });
-            document.body.classList.remove('artefact');
           }
         }, 100);
       }
