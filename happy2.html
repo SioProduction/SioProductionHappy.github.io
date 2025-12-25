@@ -84,7 +84,7 @@
       min-height: 40px;
     }
 
-    /* Мини-окно-чат */
+    /* Мини-окно-чат (справа снизу) */
     #mini-window-toggle {
       position: absolute;
       bottom: 20px;
@@ -143,7 +143,7 @@
     </div>
   </div>
 
-  <!-- Окно 2: Пустое (можно использовать для контента) -->
+  <!-- Окно 2: Пустое -->
   <div class="chan-window" style="top: 50%">
     <h2>...</h2>
     <div class="chan-window-content">
@@ -151,17 +151,17 @@
     </div>
   </div>
 
-  <!-- Окно 3: Чат -->
+  <!-- Окно 3: CHAT (заголовок) -->
   <div class="chan-window" style="top: 70%">
     <h2>CHAT</h2>
     <div class="chan-window-content">
-      <div id="chat-display">Вы Offline.<br><a id="connect-link">Подключиться к сети?</a></div>
+      <div id="chat-placeholder">Вы Offline.<br><a id="connect-link">Подключиться к сети?</a></div>
     </div>
   </div>
 
-  <!-- Кнопка для раскрытия чата (оставляем для совместимости) -->
-  <div id="mini-window-toggle" style="display: none;">▼ CHAT</div>
-  <div id="mini-window-content" style="display: none;">
+  <!-- Выдвижной чат справа снизу -->
+  <div id="mini-window-toggle">▼ CHAT</div>
+  <div id="mini-window-content">
     Вы Offline.<br><br>
     <a id="connect-link2">Подключиться к сети?</a>
   </div>
@@ -170,26 +170,25 @@
     function mirrorDate(realDate) {
       const year = 2008;
 
-      // Месяц: 0–11 → зеркало: 11 - месяц → 1–12
-      const mirroredMonthIndex = 11 - realDate.getMonth();
-      const mirroredMonth = mirroredMonthIndex + 1;
+      // Месяц: зеркальный (1 ↔ 12, 2 ↔ 11, ...)
+      const mirroredMonthIndex = 11 - realDate.getMonth(); // 0–11 → зеркало
+      const mirroredMonth = mirroredMonthIndex + 1; // 1–12
 
-      // День: 1–31 → зеркало: 32 - день, но не более дней в месяце
-      const daysInMirroredMonth = new Date(2008, mirroredMonthIndex + 1, 0).getDate();
-      let mirroredDay = 32 - realDate.getDate();
-      if (mirroredDay < 1) mirroredDay = 1;
-      if (mirroredDay > daysInMirroredMonth) mirroredDay = daysInMirroredMonth;
+      // День: такой же, как у пользователя
+      const day = realDate.getDate();
 
-      // Время: зеркало (23 - час, 59 - минута, 59 - секунда)
-      const mirroredHour = 23 - realDate.getHours();
-      const mirroredMinute = 59 - realDate.getMinutes();
-      const mirroredSecond = 59 - realDate.getSeconds();
+      // Час: +12 часов (модуль 24)
+      let hour = (realDate.getHours() + 12) % 24;
+
+      // Минуты и секунды: без изменений
+      const minute = realDate.getMinutes();
+      const second = realDate.getSeconds();
 
       const pad = n => String(n).padStart(2, '0');
 
       return {
-        date: `2008-${pad(mirroredMonth)}-${pad(mirroredDay)}`,
-        time: `${pad(mirroredHour)}:${pad(mirroredMinute)}:${pad(mirroredSecond)}`
+        date: `2008-${pad(mirroredMonth)}-${pad(day)}`,
+        time: `${pad(hour)}:${pad(minute)}:${pad(second)}`
       };
     }
 
@@ -203,7 +202,19 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    // Обработчик для ссылки "Подключиться к сети?"
+    // Переключение мини-окна-чата
+    document.getElementById('mini-window-toggle').addEventListener('click', function () {
+      const content = document.getElementById('mini-window-content');
+      if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        this.textContent = '▲ CHAT';
+      } else {
+        content.style.display = 'none';
+        this.textContent = '▼ CHAT';
+      }
+    });
+
+    // Обработчики для ссылок
     document.getElementById('connect-link').addEventListener('click', function () {
       alert("Сеть недоступна. Вы остались в офлайн.");
     });
