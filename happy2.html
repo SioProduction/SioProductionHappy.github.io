@@ -46,25 +46,33 @@
     }
 
     #clock-icon {
-      width: 34px;   /* 69 / 2 ≈ 34 */
-      height: 41px;  /* 82 / 2 ≈ 41 */
+      width: 34px;
+      height: 41px;
       image-rendering: pixelated;
       display: block;
     }
 
-    /* Три окна по центру (как на 4chan) */
-    .chan-window {
+    /* Контейнер для трёх центральных окон (как на 4chan) */
+    #windows-container {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: min(90%, 800px);
-      background: #d0e4f7;
-      border: 4 hpx solid #1e5cb0;
-      padding: 12px;
-      margin-bottom: 10px;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
       z-index: 10;
+      width: min(90%, 800px);
+    }
+
+    /* Окно в стиле 4chan */
+    .chan-window {
+      width: 100%;
+      background: #d0e4f7;
+      border: 4px solid #1e5cb0;
+      padding: 12px;
+      text-align: center;
     }
 
     .chan-window h2 {
@@ -83,11 +91,12 @@
       min-height: 40px;
     }
 
-    /* Мини-окно-чат (выглядывает снизу) */
+    /* Кнопка чата (выглядывает снизу) */
     #mini-window-toggle {
       position: absolute;
       bottom: 0;
-      right: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       width: 400px;
       background: #aaa;
       color: black;
@@ -97,13 +106,15 @@
       font-size: 14px;
       cursor: pointer;
       z-index: 200;
-      transition: bottom 0.3s ease;
+      transition: transform 0.4s cubic-bezier(0.3, 0, 0.7, 1);
     }
 
+    /* Мини-окно чата: изначально скрыто внизу */
     #mini-window-content {
       position: absolute;
-      bottom: 26px; /* прячется сразу над кнопкой, но скрыто */
-      right: 20px;
+      bottom: -150px; /* полностью скрыто снизу */
+      left: 50%;
+      transform: translateX(-50%);
       width: 400px;
       height: 150px;
       background: white;
@@ -113,11 +124,16 @@
       color: black;
       z-index: 200;
       overflow: hidden;
-      display: none; /* скрыто изначально */
+      transition: bottom 0.4s cubic-bezier(0.3, 0, 0.7, 1);
     }
 
+    /* Состояние "открыто" */
     #mini-window-content.show {
-      display: block;
+      bottom: 26px; /* поднимается над кнопкой */
+    }
+
+    #mini-window-toggle.open {
+      transform: translate(-50%, -150px); /* кнопка уезжает вверх вместе с окном */
     }
   </style>
 </head>
@@ -132,34 +148,37 @@
     <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
   </div>
 
-  <!-- Окно 1: Offline -->
-  <div class="chan-window" style="top: 30%">
-    <h2>Offline</h2>
-    <div class="chan-window-content">
-      <!-- Сюда позже можно вставить новости -->
+  <!-- Три окна по центру как на 4chan -->
+  <div id="windows-container">
+    <!-- Окно 1: Offline -->
+    <div class="chan-window">
+      <h2>Offline</h2>
+      <div class="chan-window-content">
+        <!-- Новости позже -->
+      </div>
+    </div>
+
+    <!-- Окно 2: Пустое -->
+    <div class="chan-window">
+      <h2>...</h2>
+      <div class="chan-window-content">
+        [Content Placeholder]
+      </div>
+    </div>
+
+    <!-- Окно 3: CHAT -->
+    <div class="chan-window">
+      <h2>CHAT</h2>
+      <div class="chan-window-content">
+        <div id="chat-placeholder">Вы Offline.<br><a id="connect-link">Подключиться к сети?</a></div>
+      </div>
     </div>
   </div>
 
-  <!-- Окно 2: Пустое -->
-  <div class="chan-window" style="top: 50%">
-    <h2>...</h2>
-    <div class="chan-window-content">
-      [Content Placeholder]
-    </div>
-  </div>
-
-  <!-- Окно 3: CHAT (заголовок) -->
-  <div class="chan-window" style="top: 70%">
-    <h2>CHAT</h2>
-    <div class="chan-window-content">
-      <div id="chat-placeholder">Вы Offline.<br><a id="connect-link">Подключиться к сети?</a></div>
-    </div>
-  </div>
-
-  <!-- Кнопка чата (выглядывает снизу) -->
+  <!-- Кнопка чата -->
   <div id="mini-window-toggle">▼ CHAT</div>
   <div id="mini-window-content">
-    <!-- Пустое окно — юзер offline -->
+    <!-- Пустое окно — пользователь offline -->
   </div>
 
   <script>
@@ -193,12 +212,15 @@
     const content = document.getElementById('mini-window-content');
 
     toggle.addEventListener('click', function () {
-      if (content.classList.contains('show')) {
+      const isOpen = content.classList.contains('show');
+      if (isOpen) {
         content.classList.remove('show');
-        this.textContent = '▼ CHAT';
+        toggle.classList.remove('open');
+        toggle.textContent = '▼ CHAT';
       } else {
         content.classList.add('show');
-        this.textContent = '▲ CHAT';
+        toggle.classList.add('open');
+        toggle.textContent = '▲ CHAT';
       }
     });
 
