@@ -12,146 +12,150 @@
     }
 
     body {
-      background-image: url('pfon.jpg');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
+      background: url('pic/pfon.jpg') center/cover no-repeat fixed;
       font-family: 'Courier New', monospace;
       color: white;
-      overflow: hidden;
       height: 100vh;
+      overflow: hidden;
       position: relative;
     }
 
-    /* Таймер слева сверху */
+    /* Стикер времени */
     #timer-sticker {
       position: absolute;
       top: 20px;
       left: 20px;
       background: black;
-      padding: 6px 10px;
       border: 3px solid black;
+      padding: 6px 10px;
       color: white;
       font-size: 14px;
-      z-index: 10;
+      line-height: 1.3;
+      z-index: 100;
     }
 
+    /* Часы рядом */
     #clock-icon {
       position: absolute;
       top: 22px;
-      left: 100px;
+      left: 104px;
       width: 69px;
       height: 82px;
-      z-index: 10;
+      image-rendering: pixelated;
+      z-index: 100;
     }
 
-    /* Центральное окно (баннер) */
+    /* Центральный баннер */
     #banner {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 500px;
-      background: #d0e4f7; /* светло-голубой фон */
-      border: 4px solid #1e5cb0; /* синяя рамка */
+      width: 520px;
+      background: #d0e4f7;
+      border: 4px solid #1e5cb0;
       padding: 16px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      z-index: 5;
+      font-size: 16px;
+      text-align: center;
+      z-index: 10;
     }
 
-    /* Мини-окно внизу справа */
+    /* Мини-окно */
     #mini-window-toggle {
       position: absolute;
       bottom: 20px;
       right: 20px;
       width: 180px;
-      background: #ccc; /* серая рамка */
-      padding: 6px 0;
+      background: #aaa;
+      color: black;
       text-align: center;
-      cursor: pointer;
+      padding: 5px 0;
       font-weight: bold;
       font-size: 12px;
-      color: black;
-      z-index: 20;
+      cursor: pointer;
+      z-index: 200;
     }
 
     #mini-window-content {
       position: absolute;
-      bottom: 42px;
+      bottom: 45px;
       right: 20px;
       width: 180px;
-      height: 120px;
+      height: 110px;
       background: white;
-      border: 2px solid #999;
+      border: 2px solid #888;
       padding: 8px;
       font-size: 12px;
       display: none;
-      z-index: 20;
-    }
-
-    .hidden {
-      display: none !important;
+      color: black;
+      z-index: 200;
     }
   </style>
 </head>
 <body>
 
-  <!-- Таймер-стикер -->
-  <div id="timer-sticker">2008-<span id="month">12</span>-<span id="day">31</span><br><span id="time">00:00</span></div>
-  <img id="clock-icon" src="Clock.webp" alt="Clock">
+  <div id="timer-sticker">
+    <span id="date">2008-12-31</span><br>
+    <span id="time">00:00</span>
+  </div>
+  <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
 
-  <!-- Центральный баннер -->
   <div id="banner">
-    <!-- сюда можно добавить содержимое баннера -->
-    <p style="text-align:center; font-size:16px;">[HORROR OLD WEB]</p>
+    [HORROR OLD WEB // HAPPY2]
   </div>
 
-  <!-- Мини-окно -->
   <div id="mini-window-toggle">▼ MINI WINDOW</div>
   <div id="mini-window-content">
-    Это скрытое окно.<br>
-    Нажмите на заголовок,<br>
-    чтобы скрыть его снова.
+    Hidden content.<br>
+    Click header to hide.
   </div>
 
   <script>
-    // Функция для "зеркального" времени и даты
-    function mirrorTime() {
-      const now = new Date();
-      // Месяц: 0–11 → зеркалим: 11 - месяц
-      const mirroredMonth = 11 - now.getMonth();
-      const monthStr = String(mirroredMonth + 1).padStart(2, '0');
-      
-      // День: 1–31 → зеркалим: 32 - день, но не более 31
-      const daysInMonth = new Date(2008, mirroredMonth + 1, 0).getDate();
-      const mirroredDay = Math.min(32 - now.getDate(), daysInMonth);
-      const dayStr = String(mirroredDay).padStart(2, '0');
-      
-      // Часы: 0–23 → зеркалим: 23 - час
-      const mirroredHour = 23 - now.getHours();
-      const hourStr = String(mirroredHour).padStart(2, '0');
-      
-      // Минуты: 0–59 → зеркалим: 59 - минута
-      const mirroredMinute = 59 - now.getMinutes();
-      const minuteStr = String(mirroredMinute).padStart(2, '0');
+    function mirrorDate(realDate) {
+      const year = 2008;
 
-      document.getElementById('month').textContent = monthStr;
-      document.getElementById('day').textContent = dayStr;
-      document.getElementById('time').textContent = `${hourStr}:${minuteStr}`;
+      // Зеркальный месяц: январь (0) ↔ декабрь (11) → 11 - месяц
+      const mirroredMonthIndex = 11 - realDate.getMonth();
+      const mirroredMonth = mirroredMonthIndex + 1; // 1–12
+
+      // Определяем, сколько дней в зеркальном месяце (в 2008 — високосный!)
+      const daysInMirroredMonth = new Date(2008, mirroredMonthIndex + 1, 0).getDate();
+
+      // Зеркальный день: 1 ↔ 31, 2 ↔ 30 → 32 - день, но не больше, чем дней в месяце
+      let mirroredDay = 32 - realDate.getDate();
+      if (mirroredDay < 1) mirroredDay = 1;
+      if (mirroredDay > daysInMirroredMonth) mirroredDay = daysInMirroredMonth;
+
+      // Время
+      const mirroredHour = 23 - realDate.getHours();
+      const mirroredMinute = 59 - realDate.getMinutes();
+
+      const pad = n => String(n).padStart(2, '0');
+
+      return {
+        date: `2008-${pad(mirroredMonth)}-${pad(mirroredDay)}`,
+        time: `${pad(mirroredHour)}:${pad(mirroredMinute)}`
+      };
     }
 
-    // Обновляем каждую секунду
-    setInterval(mirrorTime, 1000);
-    mirrorTime(); // сразу при загрузке
+    function updateTimer() {
+      const now = new Date();
+      const mirrored = mirrorDate(now);
+      document.getElementById('date').textContent = mirrored.date;
+      document.getElementById('time').textContent = mirrored.time;
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
 
     // Переключение мини-окна
     document.getElementById('mini-window-toggle').addEventListener('click', function () {
       const content = document.getElementById('mini-window-content');
-      if (content.classList.contains('hidden')) {
-        content.classList.remove('hidden');
+      if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
         this.textContent = '▲ MINI WINDOW';
       } else {
-        content.classList.add('hidden');
+        content.style.display = 'none';
         this.textContent = '▼ MINI WINDOW';
       }
     });
