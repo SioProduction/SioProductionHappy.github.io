@@ -34,33 +34,56 @@
       z-index: 100;
     }
 
-    /* Часы рядом */
-    #clock-icon {
+    /* Часы в чёрной рамке */
+    #clock-container {
       position: absolute;
       top: 22px;
-      left: 104px;
-      width: 69px;
-      height: 82px;
-      image-rendering: pixelated;
+      left: 124px; /* сдвинуто правее */
+      width: 46px;  /* 69 / 1.5 ≈ 46 */
+      height: 55px; /* 82 / 1.5 ≈ 55 */
+      border: 2px solid black;
+      background: black;
       z-index: 100;
+      image-rendering: pixelated;
     }
 
-    /* Центральный баннер */
-    #banner {
+    #clock-icon {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Широкий баннер-плашка (как на 4chan) */
+    #news-panel {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 520px;
+      width: min(90%, 800px);
       background: #d0e4f7;
       border: 4px solid #1e5cb0;
-      padding: 16px;
-      font-size: 16px;
+      padding: 12px;
       text-align: center;
       z-index: 10;
     }
 
-    /* Мини-окно */
+    #news-panel h2 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      color: #000;
+    }
+
+    #news-content {
+      font-size: 14px;
+      color: #222;
+      text-align: left;
+      padding: 8px;
+      background: #f0f8ff;
+      border: 1px dashed #888;
+      min-height: 60px;
+    }
+
+    /* Мини-окно (чат) */
     #mini-window-toggle {
       position: absolute;
       bottom: 20px;
@@ -81,60 +104,66 @@
       bottom: 45px;
       right: 20px;
       width: 180px;
-      height: 110px;
+      height: 100px;
       background: white;
       border: 2px solid #888;
       padding: 8px;
       font-size: 12px;
-      display: none;
       color: black;
+      display: none;
       z-index: 200;
+    }
+
+    #mini-window-content a {
+      color: #0000ee;
+      text-decoration: underline;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
+  <!-- Таймер -->
   <div id="timer-sticker">
     <span id="date">2008-12-31</span><br>
-    <span id="time">00:00</span>
-  </div>
-  <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
-
-  <div id="banner">
-    [HORROR OLD WEB // HAPPY2]
+    <span id="time">00:00:00</span>
   </div>
 
-  <div id="mini-window-toggle">▼ MINI WINDOW</div>
+  <!-- Часы в чёрной рамке -->
+  <div id="clock-container">
+    <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
+  </div>
+
+  <!-- Широкий новостной баннер -->
+  <div id="news-panel">
+    <h2>Offline</h2>
+    <div id="news-content">
+      <!-- Сюда позже можно вставить новости -->
+    </div>
+  </div>
+
+  <!-- Мини-окно-чат -->
+  <div id="mini-window-toggle">▼ CHAT</div>
   <div id="mini-window-content">
-    Hidden content.<br>
-    Click header to hide.
+    Вы Offline.<br><br>
+    <a id="connect-link">Подключиться к сети?</a>
   </div>
 
   <script>
     function mirrorDate(realDate) {
       const year = 2008;
-
-      // Зеркальный месяц: январь (0) ↔ декабрь (11) → 11 - месяц
-      const mirroredMonthIndex = 11 - realDate.getMonth();
-      const mirroredMonth = mirroredMonthIndex + 1; // 1–12
-
-      // Определяем, сколько дней в зеркальном месяце (в 2008 — високосный!)
+      const mirroredMonthIndex = 11 - realDate.getMonth(); // 0–11 → зеркало
+      const mirroredMonth = mirroredMonthIndex + 1;
       const daysInMirroredMonth = new Date(2008, mirroredMonthIndex + 1, 0).getDate();
-
-      // Зеркальный день: 1 ↔ 31, 2 ↔ 30 → 32 - день, но не больше, чем дней в месяце
       let mirroredDay = 32 - realDate.getDate();
-      if (mirroredDay < 1) mirroredDay = 1;
-      if (mirroredDay > daysInMirroredMonth) mirroredDay = daysInMirroredMonth;
-
-      // Время
+      mirroredDay = Math.max(1, Math.min(mirroredDay, daysInMirroredMonth));
       const mirroredHour = 23 - realDate.getHours();
       const mirroredMinute = 59 - realDate.getMinutes();
-
+      const mirroredSecond = 59 - realDate.getSeconds();
       const pad = n => String(n).padStart(2, '0');
-
       return {
         date: `2008-${pad(mirroredMonth)}-${pad(mirroredDay)}`,
-        time: `${pad(mirroredHour)}:${pad(mirroredMinute)}`
+        time: `${pad(mirroredHour)}:${pad(mirroredMinute)}:${pad(mirroredSecond)}`
       };
     }
 
@@ -148,16 +177,21 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    // Переключение мини-окна
+    // Переключение чата
     document.getElementById('mini-window-toggle').addEventListener('click', function () {
       const content = document.getElementById('mini-window-content');
       if (content.style.display === 'none' || content.style.display === '') {
         content.style.display = 'block';
-        this.textContent = '▲ MINI WINDOW';
+        this.textContent = '▲ CHAT';
       } else {
         content.style.display = 'none';
-        this.textContent = '▼ MINI WINDOW';
+        this.textContent = '▼ CHAT';
       }
+    });
+
+    // "Подключиться к сети?" — заглушка (можно позже добавить glitch-эффект)
+    document.getElementById('connect-link').addEventListener('click', function () {
+      // Ничего не происходит — вы в оффлайне навсегда
     });
   </script>
 
