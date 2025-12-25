@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>happy2</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="pic/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="pic/favicon.png" type="image/png">
+
   <style>
     * {
       margin: 0;
@@ -34,13 +39,13 @@
       z-index: 100;
     }
 
-    /* Часы в чёрной рамке */
+    /* Часы в чёрной рамке — оригинальный размер 69x82 */
     #clock-container {
       position: absolute;
-      top: 22px;
+      top: 18px; /* чуть выше, на уровне текста */
       left: 124px;
-      width: 46px;
-      height: 55px;
+      width: 69px;
+      height: 82px;
       border: 2px solid black;
       background: black;
       z-index: 100;
@@ -89,7 +94,7 @@
       position: absolute;
       bottom: 20px;
       right: 20px;
-      width: 180px;
+      width: 200px; /* увеличил ширину */
       background: #aaa;
       color: black;
       text-align: center;
@@ -104,7 +109,7 @@
       position: absolute;
       bottom: 45px;
       right: 20px;
-      width: 180px;
+      width: 200px;
       height: 100px;
       background: white;
       border: 2px solid #888;
@@ -113,12 +118,6 @@
       color: black;
       display: none;
       z-index: 200;
-    }
-
-    #mini-window-content a {
-      color: #0000ee;
-      text-decoration: underline;
-      cursor: pointer;
     }
   </style>
 </head>
@@ -130,7 +129,7 @@
     <span id="time">00:00:00</span>
   </div>
 
-  <!-- Часы в чёрной рамке -->
+  <!-- Часы в чёрной рамке — оригинальный размер -->
   <div id="clock-container">
     <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
   </div>
@@ -162,8 +161,7 @@
   <!-- Выдвижной чат справа снизу -->
   <div id="mini-window-toggle">▼ CHAT</div>
   <div id="mini-window-content">
-    Вы Offline.<br><br>
-    <a id="connect-link2">Подключиться к сети?</a>
+    <!-- Пустое окно — юзер offline -->
   </div>
 
   <script>
@@ -216,10 +214,6 @@
 
     // Обработчики для ссылок
     document.getElementById('connect-link').addEventListener('click', function () {
-      alert("Сеть недоступна. Вы остались в офлайн.");
-    });
-
-    document.getElementById('connect-link2').addEventListener('click', function () {
       alert("Сеть недоступна. Вы остались в офлайн.");
     });
   </script>
