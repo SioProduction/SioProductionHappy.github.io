@@ -11,7 +11,6 @@
       box-sizing: border-box;
     }
 
-    /* === ОСНОВНОЙ КОНТЕЙНЕР ДЛЯ ВСЕГО — ВКЛЮЧАЯ РАМКИ === */
     #rootContainer {
       position: relative;
       width: 100vw;
@@ -19,7 +18,6 @@
       overflow-x: hidden;
     }
 
-    /* === ЧЁРНЫЕ РАМКИ — НАСТОЯЩИЕ ЭЛЕМЕНТЫ === */
     .side-border {
       position: fixed;
       top: 0;
@@ -27,10 +25,23 @@
       height: 100vh;
       background: #000;
       z-index: 10;
-      pointer-events: none; /* чтобы не мешали кликам */
+      pointer-events: none;
     }
     #leftBorder { left: 0; }
     #rightBorder { right: 0; }
+
+    /* Скрытый символ # — внутри правой чёрной рамки */
+    #hiddenHash {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      color: transparent;
+      font-family: "Terminal", monospace;
+      font-size: 18px;
+      z-index: 20;
+      pointer-events: auto;
+      user-select: none;
+    }
 
     body {
       background-color: #208C71;
@@ -171,7 +182,6 @@
       cursor: pointer;
     }
 
-    /* === ВСПОМНИ === */
     #remember {
       position: fixed;
       top: 0;
@@ -225,9 +235,12 @@
   </style>
 </head>
 <body>
-  <!-- === РАМКИ СНАРУЖИ КОНТЕНТА — НО ВНУТРИ BODY === -->
+  <!-- Чёрные рамки -->
   <div id="leftBorder" class="side-border"></div>
   <div id="rightBorder" class="side-border"></div>
+
+  <!-- Скрытый символ # в правом верхнем углу (в чёрной рамке) -->
+  <div id="hiddenHash">#</div>
 
   <div id="rootContainer">
     <div class="content-wrapper">
@@ -287,7 +300,6 @@
     const secretBlock = document.querySelector('.secret');
     const secretCode = document.getElementById('secretCode');
 
-    // Звуки — из папки audio/
     const errorSound = new Audio('audio/169. Usb1.mp3');
     const successSound = new Audio('audio/170. Usb2.mp3');
     const glitchSound = new Audio('audio/177. Worm.Hit.mp3');
@@ -413,6 +425,7 @@
           passErrorEl.textContent = "ERROR 434";
           errorSound.play().catch(e => {});
         } else {
+          // === ВТОРОЙ РАЗ: КРАШ + ФИКСАЦИЯ СКРОЛЛА ===
           isFrozen = true;
           lagSound.play().catch(e => {});
 
@@ -420,13 +433,29 @@
             giygasSound.play().catch(e => {});
           }, 10000);
 
-          // === ВАЖНО: НЕ ТРОГАЕМ BODY! ===
-          document.getElementById('rootContainer').style.backgroundColor = '#2f2f2f';
-          document.getElementById('rootContainer').style.filter = 'grayscale(100%) brightness(0.7)';
-          document.getElementById('rootContainer').style.pointerEvents = 'none';
-          document.getElementById('rootContainer').style.userSelect = 'none';
-          // НЕ скрываем overflow — рамки останутся!
+          // Сохраняем позицию прокрутки
+          const scrollY = window.scrollY || window.pageYOffset;
+          const root = document.getElementById('rootContainer');
 
+          // Замораживаем контент на месте
+          root.style.position = 'fixed';
+          root.style.top = `-${scrollY}px`;
+          root.style.width = '100vw';
+          root.style.height = 'auto';
+          root.style.overflow = 'hidden';
+
+          // Визуальные эффекты
+          root.style.backgroundColor = '#2f2f2f';
+          root.style.filter = 'grayscale(100%) brightness(0.7)';
+          root.style.pointerEvents = 'none';
+          root.style.userSelect = 'none';
+
+          // Блокируем скролл на уровне body
+          document.body.style.overflow = 'hidden';
+          document.body.style.position = 'fixed';
+          document.body.style.width = '100%';
+
+          // Показываем трясущуюся картинку
           setTimeout(() => {
             if (!isFrozen) return;
             what1img.style.display = 'block';
