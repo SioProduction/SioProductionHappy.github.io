@@ -12,7 +12,7 @@
     }
 
     body {
-      background: url('pic/pfon.jpg') center/cover no-repeat fixed;
+      background: url('pic/pfon.jpg') center/cover no-repeat;
       font-family: 'Courier New', monospace;
       color: white;
       height: 100vh;
@@ -38,9 +38,9 @@
     #clock-container {
       position: absolute;
       top: 22px;
-      left: 124px; /* сдвинуто правее */
-      width: 46px;  /* 69 / 1.5 ≈ 46 */
-      height: 55px; /* 82 / 1.5 ≈ 55 */
+      left: 124px;
+      width: 46px;
+      height: 55px;
       border: 2px solid black;
       background: black;
       z-index: 100;
@@ -53,8 +53,8 @@
       display: block;
     }
 
-    /* Широкий баннер-плашка (как на 4chan) */
-    #news-panel {
+    /* Три окна по центру (как на 4chan) */
+    .chan-window {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -63,27 +63,28 @@
       background: #d0e4f7;
       border: 4px solid #1e5cb0;
       padding: 12px;
+      margin-bottom: 10px;
       text-align: center;
       z-index: 10;
     }
 
-    #news-panel h2 {
-      margin-bottom: 10px;
-      font-size: 20px;
+    .chan-window h2 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
       color: #000;
     }
 
-    #news-content {
+    .chan-window-content {
       font-size: 14px;
       color: #222;
       text-align: left;
       padding: 8px;
       background: #f0f8ff;
       border: 1px dashed #888;
-      min-height: 60px;
+      min-height: 40px;
     }
 
-    /* Мини-окно (чат) */
+    /* Мини-окно-чат */
     #mini-window-toggle {
       position: absolute;
       bottom: 20px;
@@ -134,33 +135,58 @@
     <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
   </div>
 
-  <!-- Широкий новостной баннер -->
-  <div id="news-panel">
+  <!-- Окно 1: Offline -->
+  <div class="chan-window" style="top: 30%">
     <h2>Offline</h2>
-    <div id="news-content">
+    <div class="chan-window-content">
       <!-- Сюда позже можно вставить новости -->
     </div>
   </div>
 
-  <!-- Мини-окно-чат -->
-  <div id="mini-window-toggle">▼ CHAT</div>
-  <div id="mini-window-content">
+  <!-- Окно 2: Пустое (можно использовать для контента) -->
+  <div class="chan-window" style="top: 50%">
+    <h2>...</h2>
+    <div class="chan-window-content">
+      [Content Placeholder]
+    </div>
+  </div>
+
+  <!-- Окно 3: Чат -->
+  <div class="chan-window" style="top: 70%">
+    <h2>CHAT</h2>
+    <div class="chan-window-content">
+      <div id="chat-display">Вы Offline.<br><a id="connect-link">Подключиться к сети?</a></div>
+    </div>
+  </div>
+
+  <!-- Кнопка для раскрытия чата (оставляем для совместимости) -->
+  <div id="mini-window-toggle" style="display: none;">▼ CHAT</div>
+  <div id="mini-window-content" style="display: none;">
     Вы Offline.<br><br>
-    <a id="connect-link">Подключиться к сети?</a>
+    <a id="connect-link2">Подключиться к сети?</a>
   </div>
 
   <script>
     function mirrorDate(realDate) {
       const year = 2008;
-      const mirroredMonthIndex = 11 - realDate.getMonth(); // 0–11 → зеркало
+
+      // Месяц: 0–11 → зеркало: 11 - месяц → 1–12
+      const mirroredMonthIndex = 11 - realDate.getMonth();
       const mirroredMonth = mirroredMonthIndex + 1;
+
+      // День: 1–31 → зеркало: 32 - день, но не более дней в месяце
       const daysInMirroredMonth = new Date(2008, mirroredMonthIndex + 1, 0).getDate();
       let mirroredDay = 32 - realDate.getDate();
-      mirroredDay = Math.max(1, Math.min(mirroredDay, daysInMirroredMonth));
+      if (mirroredDay < 1) mirroredDay = 1;
+      if (mirroredDay > daysInMirroredMonth) mirroredDay = daysInMirroredMonth;
+
+      // Время: зеркало (23 - час, 59 - минута, 59 - секунда)
       const mirroredHour = 23 - realDate.getHours();
       const mirroredMinute = 59 - realDate.getMinutes();
       const mirroredSecond = 59 - realDate.getSeconds();
+
       const pad = n => String(n).padStart(2, '0');
+
       return {
         date: `2008-${pad(mirroredMonth)}-${pad(mirroredDay)}`,
         time: `${pad(mirroredHour)}:${pad(mirroredMinute)}:${pad(mirroredSecond)}`
@@ -177,21 +203,13 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    // Переключение чата
-    document.getElementById('mini-window-toggle').addEventListener('click', function () {
-      const content = document.getElementById('mini-window-content');
-      if (content.style.display === 'none' || content.style.display === '') {
-        content.style.display = 'block';
-        this.textContent = '▲ CHAT';
-      } else {
-        content.style.display = 'none';
-        this.textContent = '▼ CHAT';
-      }
+    // Обработчик для ссылки "Подключиться к сети?"
+    document.getElementById('connect-link').addEventListener('click', function () {
+      alert("Сеть недоступна. Вы остались в офлайн.");
     });
 
-    // "Подключиться к сети?" — заглушка (можно позже добавить glitch-эффект)
-    document.getElementById('connect-link').addEventListener('click', function () {
-      // Ничего не происходит — вы в оффлайне навсегда
+    document.getElementById('connect-link2').addEventListener('click', function () {
+      alert("Сеть недоступна. Вы остались в офлайн.");
     });
   </script>
 
