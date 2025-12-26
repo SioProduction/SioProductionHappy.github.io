@@ -19,6 +19,12 @@
       height: 100vh;
       overflow: hidden;
       position: relative;
+      transition: background 0.3s ease;
+    }
+
+    /* Черный экран для Konami */
+    body.konami-black {
+      background: black !important;
     }
 
     /* Таймер + часы */
@@ -93,16 +99,13 @@
       cursor: default;
     }
 
-    /* ——— ЧАТ: ЗАГОЛОВОК ВСЕГДА ВИДЕН ——— */
+    /* ——— ЧАТ ——— */
     #chat-container {
       position: fixed;
       bottom: 0;
       right: 20px;
       width: 560px;
       z-index: 200;
-      /* Начальное положение: только заголовок виден */
-      transform: translateY(0);
-      transition: transform 0.35s ease;
     }
 
     #chat-header {
@@ -118,7 +121,7 @@
     }
 
     #chat-body {
-      height: 210px;
+      height: 250px; /* ↑ повыше */
       background: white;
       border: 2px solid #888;
       border-top: none;
@@ -126,14 +129,15 @@
       font-size: 12px;
       color: black;
       overflow: hidden;
-      /* Изначально скрыто под заголовком */
-      transform: translateY(0);
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      transform: translateY(100%);
       transition: transform 0.35s ease;
     }
 
-    /* Когда открыт — тело выезжает вверх */
     #chat-container.open #chat-body {
-      transform: translateY(-210px);
+      transform: translateY(0);
     }
 
     #chat-contact {
@@ -171,7 +175,7 @@
     </div>
   </div>
 
-  <!-- ЧАТ — заголовок ВСЕГДА виден -->
+  <!-- ЧАТ -->
   <div id="chat-container">
     <div id="chat-header">▼ CHAT</div>
     <div id="chat-body">
@@ -220,7 +224,7 @@
       setTimeout(() => this.textContent = this.dataset.default, 2000);
     });
 
-    // ——— Чат: единый блок, заголовок всегда виден ———
+    // ——— Чат ———
     const chatContainer = document.getElementById('chat-container');
     const chatHeader = document.getElementById('chat-header');
 
@@ -242,12 +246,11 @@
       if (e.keyCode === konamiCode[konamiIndex]) {
         konamiIndex++;
         if (konamiIndex === konamiCode.length) {
-          // Активировать!
-          document.body.style.backgroundImage = "url('pic/1222.jpg')";
-          document.body.style.backgroundSize = "100% 100%";
-          document.body.style.backgroundRepeat = "no-repeat";
-          document.body.style.backgroundAttachment = "scroll";
-          // Сброс, чтобы не повторялось мгновенно
+          // Активировать чёрный экран
+          document.body.classList.add('konami-black');
+          setTimeout(() => {
+            document.body.classList.remove('konami-black');
+          }, 3000); // 3 секунды
           konamiIndex = 0;
         }
       } else {
