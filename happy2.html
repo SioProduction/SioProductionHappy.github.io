@@ -61,7 +61,7 @@
       z-index: 110;
     }
 
-    /* Единый центральный блок */
+    /* Центральный блок */
     #main-block {
       position: absolute;
       top: 50%;
@@ -78,9 +78,7 @@
       margin-bottom: 16px;
     }
 
-    .section:last-child {
-      margin-bottom: 0;
-    }
+    .section:last-child { margin-bottom: 0; }
 
     .section h2 {
       margin-bottom: 8px;
@@ -95,21 +93,22 @@
       cursor: default;
     }
 
-    /* ЧАТ — ЕДИНЫЙ БЛОК */
+    /* ——— ЧАТ: ЗАГОЛОВОК ВСЕГДА ВИДЕН ——— */
     #chat-container {
       position: fixed;
       bottom: 0;
       right: 20px;
       width: 560px;
       z-index: 200;
-      transform: translateY(100%); /* полностью скрыт под экраном */
+      /* Начальное положение: только заголовок виден */
+      transform: translateY(0);
       transition: transform 0.35s ease;
     }
 
     #chat-header {
       background: #aaa;
       color: black;
-      text-align: center; /* ← по центру! */
+      text-align: center;
       padding: 10px 0;
       font-weight: bold;
       font-size: 14px;
@@ -127,22 +126,25 @@
       font-size: 12px;
       color: black;
       overflow: hidden;
+      /* Изначально скрыто под заголовком */
+      transform: translateY(0);
+      transition: transform 0.35s ease;
+    }
+
+    /* Когда открыт — тело выезжает вверх */
+    #chat-container.open #chat-body {
+      transform: translateY(-210px);
     }
 
     #chat-contact {
       font-weight: bold;
       margin-bottom: 8px;
     }
-
-    /* Когда открыт */
-    #chat-container.show {
-      transform: translateY(0);
-    }
   </style>
 </head>
 <body>
 
-  <!-- Таймер + часы -->
+  <!-- Таймер -->
   <div id="timer-block">
     <div id="timer-text">
       <span id="date">2008-12-31</span><br>
@@ -153,42 +155,27 @@
 
   <div id="connect-btn">Подключиться к сети</div>
 
-  <!-- Единый блок -->
+  <!-- Основной блок -->
   <div id="main-block">
     <div class="section">
       <h2>FastForum</h2>
-      <div class="section-content" 
-           data-default="Вы не подключены к сети!"
-           data-hover="Подключитесь к сети перед тем как читать">
-        Вы не подключены к сети!
-      </div>
+      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как читать">Вы не подключены к сети!</div>
     </div>
-
     <div class="section">
       <h2>Музыка дня</h2>
-      <div class="section-content"
-           data-default="Вы не подключены к сети!"
-           data-hover="Подключитесь к сети перед тем как слушать">
-        Вы не подключены к сети!
-      </div>
+      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как слушать">Вы не подключены к сети!</div>
     </div>
-
     <div class="section">
       <h2>Новости дня</h2>
-      <div class="section-content"
-           data-default="Вы не подключены к сети!"
-           data-hover="Подключитесь к сети перед тем как читать">
-        Вы не подключены к сети!
-      </div>
+      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как читать">Вы не подключены к сети!</div>
     </div>
   </div>
 
-  <!-- ЧАТ — ЕДИНЫЙ БЛОК -->
+  <!-- ЧАТ — заголовок ВСЕГДА виден -->
   <div id="chat-container">
     <div id="chat-header">▼ CHAT</div>
     <div id="chat-body">
       <div id="chat-contact">???</div>
-      <!-- Будущие сообщения -->
     </div>
   </div>
 
@@ -218,40 +205,53 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    // ——— Hover на секции ———
+    // ——— Hover эффекты ———
     document.querySelectorAll('.section-content').forEach(el => {
-      const defaultText = el.dataset.default;
-      const hoverText = el.dataset.hover;
-
-      el.addEventListener('mouseenter', () => {
-        el.textContent = hoverText;
-      });
-
-      el.addEventListener('mouseleave', () => {
-        el.textContent = defaultText;
-      });
+      const def = el.dataset.default;
+      const hover = el.dataset.hover;
+      el.addEventListener('mouseenter', () => el.textContent = hover);
+      el.addEventListener('mouseleave', () => el.textContent = def);
     });
 
     // ——— Click на FastForum ———
     document.querySelector('.section:nth-of-type(1) .section-content').addEventListener('click', function () {
-      const original = this.textContent;
+      const orig = this.textContent;
       this.textContent = 'Подключитесь к сети перед тем как читать';
-      setTimeout(() => {
-        this.textContent = this.dataset.default;
-      }, 2000);
+      setTimeout(() => this.textContent = this.dataset.default, 2000);
     });
 
-    // ——— Чат: единый блок ———
+    // ——— Чат: единый блок, заголовок всегда виден ———
     const chatContainer = document.getElementById('chat-container');
     const chatHeader = document.getElementById('chat-header');
 
     chatHeader.addEventListener('click', function () {
-      if (chatContainer.classList.contains('show')) {
-        chatContainer.classList.remove('show');
+      if (chatContainer.classList.contains('open')) {
+        chatContainer.classList.remove('open');
         chatHeader.textContent = '▼ CHAT';
       } else {
-        chatContainer.classList.add('show');
+        chatContainer.classList.add('open');
         chatHeader.textContent = '▲ CHAT';
+      }
+    });
+
+    // ——— Код Конами ———
+    let konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→B A
+    let konamiIndex = 0;
+
+    document.addEventListener('keydown', function (e) {
+      if (e.keyCode === konamiCode[konamiIndex]) {
+        konamiIndex++;
+        if (konamiIndex === konamiCode.length) {
+          // Активировать!
+          document.body.style.backgroundImage = "url('pic/1222.jpg')";
+          document.body.style.backgroundSize = "100% 100%";
+          document.body.style.backgroundRepeat = "no-repeat";
+          document.body.style.backgroundAttachment = "scroll";
+          // Сброс, чтобы не повторялось мгновенно
+          konamiIndex = 0;
+        }
+      } else {
+        konamiIndex = 0;
       }
     });
 
