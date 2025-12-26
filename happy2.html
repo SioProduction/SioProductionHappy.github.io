@@ -61,69 +61,80 @@
       z-index: 110;
     }
 
-    /* Три центральных блока */
-    .block {
+    /* Единый центральный блок */
+    #main-block {
       position: absolute;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
       width: min(90%, 700px);
       background: #d0e4f7;
       border: 4px solid #1e5cb0;
-      padding: 14px;
-      text-align: center;
+      padding: 16px;
       z-index: 10;
     }
 
-    .block h2 {
-      margin-bottom: 10px;
+    .section {
+      margin-bottom: 16px;
+    }
+
+    .section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section h2 {
+      margin-bottom: 8px;
       color: #000;
       font-size: 18px;
     }
 
-    .block-content {
+    .section-content {
       font-size: 14px;
       color: #222;
       line-height: 1.4;
     }
 
-    #block1 { top: 25%; }
-    #block2 { top: 50%; }
-    #block3 { top: 75%; }
-
-    /* Кнопка чата — справа снизу, только заголовок виден */
-    #chat-toggle {
+    /* Чат — исправленный */
+    #chat-container {
       position: fixed;
       bottom: 0;
       right: 20px;
-      width: 400px;
+      width: 560px; /* 400 * 1.4 */
+      z-index: 200;
+      transform: translateY(100%);
+      transition: transform 0.35s ease;
+    }
+
+    #chat-container.show {
+      transform: translateY(0);
+    }
+
+    #chat-header {
       background: #aaa;
       color: black;
       text-align: center;
-      padding: 8px 0;
+      padding: 10px 0;
       font-weight: bold;
       font-size: 14px;
       cursor: pointer;
-      z-index: 200;
+      border: 2px solid #888;
+      border-bottom: none;
     }
 
-    #chat-content {
-      position: fixed;
-      bottom: 26px;
-      right: 20px;
-      width: 400px;
-      height: 150px;
+    #chat-body {
+      height: 210px; /* 150 * 1.4 */
       background: white;
       border: 2px solid #888;
+      border-top: none;
       padding: 12px;
       font-size: 12px;
       color: black;
-      z-index: 200;
-      transform: translateY(150px); /* скрыт под экраном */
-      transition: transform 0.3s ease;
+      overflow: hidden;
     }
 
-    #chat-content.open {
-      transform: translateY(0);
+    #chat-contact {
+      font-weight: bold;
+      margin-bottom: 8px;
     }
   </style>
 </head>
@@ -138,38 +149,41 @@
     <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
   </div>
 
-  <!-- Кнопка подключения — сверху по центру -->
+  <!-- Кнопка подключения -->
   <div id="connect-btn">Подключиться к сети</div>
 
-  <!-- Блок 1: FastForum -->
-  <div class="block" id="block1">
-    <h2>FastForum</h2>
-    <div class="block-content" id="forum-text">Вы не подключены к сети!</div>
+  <!-- Единый центральный блок -->
+  <div id="main-block">
+    <div class="section">
+      <h2>FastForum</h2>
+      <div class="section-content" id="forum-text">Вы не подключены к сети!</div>
+    </div>
+
+    <div class="section">
+      <h2>Музыка дня</h2>
+      <div class="section-content">Вы не подключены к сети!</div>
+    </div>
+
+    <div class="section">
+      <h2>Новости дня</h2>
+      <div class="section-content">Вы не подключены к сети!</div>
+    </div>
   </div>
 
-  <!-- Блок 2: Музыка дня -->
-  <div class="block" id="block2">
-    <h2>Музыка дня</h2>
-    <div class="block-content">Вы не подключены к сети!</div>
-  </div>
-
-  <!-- Блок 3: Новости дня -->
-  <div class="block" id="block3">
-    <h2>Новости дня</h2>
-    <div class="block-content">Вы не подключены к сети!</div>
-  </div>
-
-  <!-- Кнопка чата (справа снизу) -->
-  <div id="chat-toggle">▼ CHAT</div>
-  <div id="chat-content">
-    <!-- Пусто — вы offline -->
+  <!-- Чат (исправленный) -->
+  <div id="chat-container">
+    <div id="chat-header">▼ CHAT</div>
+    <div id="chat-body">
+      <div id="chat-contact">???</div>
+      <!-- Будущие сообщения -->
+    </div>
   </div>
 
   <script>
     // ——— ВРЕМЯ ———
     function mirrorDate(realDate) {
       const year = 2008;
-      const mirroredMonth = 12 - realDate.getMonth(); // 1 ↔ 12, 2 ↔ 11...
+      const mirroredMonth = 12 - realDate.getMonth(); // 1 ↔ 12
       const day = realDate.getDate();
       const hour = (realDate.getHours() + 12) % 24;
       const minute = realDate.getMinutes();
@@ -201,23 +215,23 @@
       }, 2000);
     });
 
-    // ——— Чат ———
-    const chatToggle = document.getElementById('chat-toggle');
-    const chatContent = document.getElementById('chat-content');
+    // ——— Чат: полное выдвижение/скрытие ———
+    const chatContainer = document.getElementById('chat-container');
+    const chatHeader = document.getElementById('chat-header');
 
-    chatToggle.addEventListener('click', function () {
-      if (chatContent.classList.contains('open')) {
-        chatContent.classList.remove('open');
-        this.textContent = '▼ CHAT';
+    chatHeader.addEventListener('click', function () {
+      if (chatContainer.classList.contains('show')) {
+        chatContainer.classList.remove('show');
+        chatHeader.textContent = '▼ CHAT';
       } else {
-        chatContent.classList.add('open');
-        this.textContent = '▲ CHAT';
+        chatContainer.classList.add('show');
+        chatHeader.textContent = '▲ CHAT';
       }
     });
 
-    // ——— Кнопка подключения (пока заглушка) ———
+    // ——— Кнопка подключения ———
     document.getElementById('connect-btn').addEventListener('click', function () {
-      // Можно позже добавить логику или glitch-эффект
+      // Заглушка
     });
   </script>
 
