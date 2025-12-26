@@ -19,12 +19,6 @@
       height: 100vh;
       overflow: hidden;
       position: relative;
-      transition: background 0.3s ease;
-    }
-
-    /* Черный экран для Konami */
-    body.konami-black {
-      background: black !important;
     }
 
     /* Таймер + часы */
@@ -100,15 +94,11 @@
     }
 
     /* ——— ЧАТ ——— */
-    #chat-container {
+    #chat-header {
       position: fixed;
       bottom: 0;
       right: 20px;
       width: 560px;
-      z-index: 200;
-    }
-
-    #chat-header {
       background: #aaa;
       color: black;
       text-align: center;
@@ -118,26 +108,30 @@
       cursor: pointer;
       border: 2px solid #888;
       border-bottom: none;
+      z-index: 200;
     }
 
     #chat-body {
-      height: 250px; /* ↑ повыше */
+      position: fixed;
+      bottom: 26px; /* сразу над заголовком */
+      right: 20px;
+      width: 560px;
+      height: 250px;
       background: white;
       border: 2px solid #888;
       border-top: none;
       padding: 12px;
       font-size: 12px;
       color: black;
-      overflow: hidden;
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      transform: translateY(100%);
-      transition: transform 0.35s ease;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
     }
 
-    #chat-container.open #chat-body {
-      transform: translateY(0);
+    #chat-body.show {
+      opacity: 1;
+      visibility: visible;
     }
 
     #chat-contact {
@@ -176,11 +170,9 @@
   </div>
 
   <!-- ЧАТ -->
-  <div id="chat-container">
-    <div id="chat-header">▼ CHAT</div>
-    <div id="chat-body">
-      <div id="chat-contact">???</div>
-    </div>
+  <div id="chat-header">▼ CHAT</div>
+  <div id="chat-body">
+    <div id="chat-contact">???</div>
   </div>
 
   <script>
@@ -225,15 +217,15 @@
     });
 
     // ——— Чат ———
-    const chatContainer = document.getElementById('chat-container');
     const chatHeader = document.getElementById('chat-header');
+    const chatBody = document.getElementById('chat-body');
 
     chatHeader.addEventListener('click', function () {
-      if (chatContainer.classList.contains('open')) {
-        chatContainer.classList.remove('open');
+      if (chatBody.classList.contains('show')) {
+        chatBody.classList.remove('show');
         chatHeader.textContent = '▼ CHAT';
       } else {
-        chatContainer.classList.add('open');
+        chatBody.classList.add('show');
         chatHeader.textContent = '▲ CHAT';
       }
     });
@@ -246,11 +238,11 @@
       if (e.keyCode === konamiCode[konamiIndex]) {
         konamiIndex++;
         if (konamiIndex === konamiCode.length) {
-          // Активировать чёрный экран
-          document.body.classList.add('konami-black');
-          setTimeout(() => {
-            document.body.classList.remove('konami-black');
-          }, 3000); // 3 секунды
+          // Меняем фон на 1222.jpg — один раз, навсегда
+          document.body.style.backgroundImage = "url('pic/1222.jpg')";
+          document.body.style.backgroundSize = "100% 100%";
+          document.body.style.backgroundRepeat = "no-repeat";
+          document.body.style.backgroundAttachment = "scroll";
           konamiIndex = 0;
         }
       } else {
