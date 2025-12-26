@@ -4,10 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>happy2</title>
-
-  <!-- Favicon -->
   <link rel="icon" href="pic/friend.jpg" type="image/jpeg">
-
   <style>
     * {
       margin: 0;
@@ -24,7 +21,7 @@
       position: relative;
     }
 
-    /* Объединённый блок: дата + время + часы */
+    /* Таймер + часы */
     #timer-block {
       position: absolute;
       top: 20px;
@@ -41,62 +38,63 @@
       gap: 8px;
     }
 
-    #timer-text {
-      white-space: nowrap;
-    }
-
     #clock-icon {
       width: 34px;
       height: 41px;
       image-rendering: pixelated;
-      display: block;
     }
 
-    /* Контейнер для трёх центральных окон (как на 4chan) */
-    #windows-container {
+    /* Кнопка подключения — сверху по центру */
+    #connect-btn {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      z-index: 10;
-      width: min(90%, 800px);
-    }
-
-    /* Окно в стиле 4chan */
-    .chan-window {
-      width: 100%;
-      background: #d0e4f7;
-      border: 4px solid #1e5cb0;
-      padding: 12px;
-      text-align: center;
-    }
-
-    .chan-window h2 {
-      margin: 0 0 8px 0;
-      font-size: 18px;
-      color: #000;
-    }
-
-    .chan-window-content {
-      font-size: 14px;
-      color: #222;
-      text-align: left;
-      padding: 8px;
-      background: #f0f8ff;
-      border: 1px dashed #888;
-      min-height: 40px;
-    }
-
-    /* Кнопка чата (выглядывает снизу) */
-    #mini-window-toggle {
-      position: absolute;
-      bottom: 0;
+      top: 20px;
       left: 50%;
       transform: translateX(-50%);
+      background: #d0e4f7;
+      border: 2px solid #1e5cb0;
+      padding: 6px 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      z-index: 110;
+    }
+
+    /* Три центральных блока */
+    .block {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(90%, 700px);
+      background: #d0e4f7;
+      border: 4px solid #1e5cb0;
+      padding: 14px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .block h2 {
+      margin-bottom: 10px;
+      color: #000;
+      font-size: 18px;
+    }
+
+    .block-content {
+      font-size: 14px;
+      color: #222;
+      line-height: 1.4;
+    }
+
+    #block1 { top: 25%; }
+    #block2 { top: 50%; }
+    #block3 { top: 75%; }
+
+    /* Кнопка чата — справа снизу, только заголовок виден */
+    #chat-toggle {
+      position: fixed;
+      bottom: 0;
+      right: 20px;
       width: 400px;
       background: #aaa;
       color: black;
@@ -106,40 +104,32 @@
       font-size: 14px;
       cursor: pointer;
       z-index: 200;
-      transition: transform 0.4s cubic-bezier(0.3, 0, 0.7, 1);
     }
 
-    /* Мини-окно чата: изначально скрыто внизу */
-    #mini-window-content {
-      position: absolute;
-      bottom: -150px; /* полностью скрыто снизу */
-      left: 50%;
-      transform: translateX(-50%);
+    #chat-content {
+      position: fixed;
+      bottom: 26px;
+      right: 20px;
       width: 400px;
       height: 150px;
       background: white;
       border: 2px solid #888;
-      padding: 8px;
+      padding: 12px;
       font-size: 12px;
       color: black;
       z-index: 200;
-      overflow: hidden;
-      transition: bottom 0.4s cubic-bezier(0.3, 0, 0.7, 1);
+      transform: translateY(150px); /* скрыт под экраном */
+      transition: transform 0.3s ease;
     }
 
-    /* Состояние "открыто" */
-    #mini-window-content.show {
-      bottom: 26px; /* поднимается над кнопкой */
-    }
-
-    #mini-window-toggle.open {
-      transform: translate(-50%, -150px); /* кнопка уезжает вверх вместе с окном */
+    #chat-content.open {
+      transform: translateY(0);
     }
   </style>
 </head>
 <body>
 
-  <!-- Объединённый блок: дата + время + часы -->
+  <!-- Таймер + часы -->
   <div id="timer-block">
     <div id="timer-text">
       <span id="date">2008-12-31</span><br>
@@ -148,44 +138,38 @@
     <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
   </div>
 
-  <!-- Три окна по центру как на 4chan -->
-  <div id="windows-container">
-    <!-- Окно 1: Offline -->
-    <div class="chan-window">
-      <h2>Offline</h2>
-      <div class="chan-window-content">
-        <!-- Новости позже -->
-      </div>
-    </div>
+  <!-- Кнопка подключения — сверху по центру -->
+  <div id="connect-btn">Подключиться к сети</div>
 
-    <!-- Окно 2: Пустое -->
-    <div class="chan-window">
-      <h2>...</h2>
-      <div class="chan-window-content">
-        [Content Placeholder]
-      </div>
-    </div>
-
-    <!-- Окно 3: CHAT -->
-    <div class="chan-window">
-      <h2>CHAT</h2>
-      <div class="chan-window-content">
-        <div id="chat-placeholder">Вы Offline.<br><a id="connect-link">Подключиться к сети?</a></div>
-      </div>
-    </div>
+  <!-- Блок 1: FastForum -->
+  <div class="block" id="block1">
+    <h2>FastForum</h2>
+    <div class="block-content" id="forum-text">Вы не подключены к сети!</div>
   </div>
 
-  <!-- Кнопка чата -->
-  <div id="mini-window-toggle">▼ CHAT</div>
-  <div id="mini-window-content">
-    <!-- Пустое окно — пользователь offline -->
+  <!-- Блок 2: Музыка дня -->
+  <div class="block" id="block2">
+    <h2>Музыка дня</h2>
+    <div class="block-content">Вы не подключены к сети!</div>
+  </div>
+
+  <!-- Блок 3: Новости дня -->
+  <div class="block" id="block3">
+    <h2>Новости дня</h2>
+    <div class="block-content">Вы не подключены к сети!</div>
+  </div>
+
+  <!-- Кнопка чата (справа снизу) -->
+  <div id="chat-toggle">▼ CHAT</div>
+  <div id="chat-content">
+    <!-- Пусто — вы offline -->
   </div>
 
   <script>
+    // ——— ВРЕМЯ ———
     function mirrorDate(realDate) {
       const year = 2008;
-      const mirroredMonthIndex = 11 - realDate.getMonth(); // 0–11 → зеркало
-      const mirroredMonth = mirroredMonthIndex + 1; // 1–12
+      const mirroredMonth = 12 - realDate.getMonth(); // 1 ↔ 12, 2 ↔ 11...
       const day = realDate.getDate();
       const hour = (realDate.getHours() + 12) % 24;
       const minute = realDate.getMinutes();
@@ -207,25 +191,33 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    // Переключение чата
-    const toggle = document.getElementById('mini-window-toggle');
-    const content = document.getElementById('mini-window-content');
+    // ——— FastForum клик ———
+    const forumText = document.getElementById('forum-text');
+    forumText.addEventListener('click', function () {
+      const original = this.textContent;
+      this.textContent = 'Подключитесь к сети перед тем как читать';
+      setTimeout(() => {
+        this.textContent = original;
+      }, 2000);
+    });
 
-    toggle.addEventListener('click', function () {
-      const isOpen = content.classList.contains('show');
-      if (isOpen) {
-        content.classList.remove('show');
-        toggle.classList.remove('open');
-        toggle.textContent = '▼ CHAT';
+    // ——— Чат ———
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatContent = document.getElementById('chat-content');
+
+    chatToggle.addEventListener('click', function () {
+      if (chatContent.classList.contains('open')) {
+        chatContent.classList.remove('open');
+        this.textContent = '▼ CHAT';
       } else {
-        content.classList.add('show');
-        toggle.classList.add('open');
-        toggle.textContent = '▲ CHAT';
+        chatContent.classList.add('open');
+        this.textContent = '▲ CHAT';
       }
     });
 
-    document.getElementById('connect-link').addEventListener('click', function () {
-      alert("Сеть недоступна. Вы остались в офлайн.");
+    // ——— Кнопка подключения (пока заглушка) ———
+    document.getElementById('connect-btn').addEventListener('click', function () {
+      // Можно позже добавить логику или glitch-эффект
     });
   </script>
 
