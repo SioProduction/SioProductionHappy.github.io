@@ -95,29 +95,30 @@
       cursor: default;
     }
 
-    /* Чат — исправлен: всегда виден заголовок */
-    #chat-header {
+    /* ЧАТ — ЕДИНЫЙ БЛОК */
+    #chat-container {
       position: fixed;
       bottom: 0;
       right: 20px;
       width: 560px;
+      z-index: 200;
+      transform: translateY(100%); /* полностью скрыт под экраном */
+      transition: transform 0.35s ease;
+    }
+
+    #chat-header {
       background: #aaa;
       color: black;
-      text-align: center;
+      text-align: center; /* ← по центру! */
       padding: 10px 0;
       font-weight: bold;
       font-size: 14px;
       cursor: pointer;
       border: 2px solid #888;
       border-bottom: none;
-      z-index: 200;
     }
 
     #chat-body {
-      position: fixed;
-      bottom: 26px; /* сразу над заголовком */
-      right: 20px;
-      width: 560px;
       height: 210px;
       background: white;
       border: 2px solid #888;
@@ -125,18 +126,17 @@
       padding: 12px;
       font-size: 12px;
       color: black;
-      z-index: 200;
-      transform: translateY(210px); /* спрятан под заголовком */
-      transition: transform 0.35s ease;
-    }
-
-    #chat-body.show {
-      transform: translateY(0);
+      overflow: hidden;
     }
 
     #chat-contact {
       font-weight: bold;
       margin-bottom: 8px;
+    }
+
+    /* Когда открыт */
+    #chat-container.show {
+      transform: translateY(0);
     }
   </style>
 </head>
@@ -183,11 +183,13 @@
     </div>
   </div>
 
-  <!-- Чат -->
-  <div id="chat-header">▼ CHAT</div>
-  <div id="chat-body">
-    <div id="chat-contact">???</div>
-    <!-- Будущие сообщения -->
+  <!-- ЧАТ — ЕДИНЫЙ БЛОК -->
+  <div id="chat-container">
+    <div id="chat-header">▼ CHAT</div>
+    <div id="chat-body">
+      <div id="chat-contact">???</div>
+      <!-- Будущие сообщения -->
+    </div>
   </div>
 
   <script>
@@ -230,9 +232,8 @@
       });
     });
 
-    // ——— Click на FastForum (сохраняю старое поведение) ———
-    const forumEl = document.querySelector('.section-content');
-    forumEl.addEventListener('click', function () {
+    // ——— Click на FastForum ———
+    document.querySelector('.section:nth-of-type(1) .section-content').addEventListener('click', function () {
       const original = this.textContent;
       this.textContent = 'Подключитесь к сети перед тем как читать';
       setTimeout(() => {
@@ -240,16 +241,16 @@
       }, 2000);
     });
 
-    // ——— Чат ———
+    // ——— Чат: единый блок ———
+    const chatContainer = document.getElementById('chat-container');
     const chatHeader = document.getElementById('chat-header');
-    const chatBody = document.getElementById('chat-body');
 
     chatHeader.addEventListener('click', function () {
-      if (chatBody.classList.contains('show')) {
-        chatBody.classList.remove('show');
+      if (chatContainer.classList.contains('show')) {
+        chatContainer.classList.remove('show');
         chatHeader.textContent = '▼ CHAT';
       } else {
-        chatBody.classList.add('show');
+        chatContainer.classList.add('show');
         chatHeader.textContent = '▲ CHAT';
       }
     });
