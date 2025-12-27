@@ -119,6 +119,8 @@
       z-index: 200;
       text-align: center;
       width: 80px;
+      height: 34px;
+      line-height: 1.2;
     }
 
     body.horror-mode #chat-toggle {
@@ -136,8 +138,7 @@
       width: 560px;
       height: 300px;
       background: white;
-      border: 2px solid #888;
-      border-top: none;
+      border: 2px solid #888; /* ← ПОЛНАЯ ОБВОДКА, включая верх */
       z-index: 199;
       padding: 16px;
       display: flex;
@@ -146,7 +147,7 @@
     }
 
     #chat-window.open {
-      bottom: 60px;
+      bottom: 86px; /* ← достаточно высоко, чтобы не касаться кнопки */
     }
 
     .chat-header {
