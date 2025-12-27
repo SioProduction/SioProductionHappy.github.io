@@ -13,7 +13,11 @@
     }
 
     body {
-      background: url('pic/pfon.jpg') center/cover no-repeat;
+      background-color: black; /* ← чёрный фон */
+      background-image: url('pic/pfon.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
       font-family: 'Courier New', monospace;
       color: white;
       height: 100vh;
@@ -123,23 +127,48 @@
       z-index: 200;
       display: none;
       overflow: hidden;
+      padding: 12px;
     }
 
     #chat-body.show {
       display: block;
     }
 
-    /* В злом режиме — фото вместо текста */
-    #chat-body.horror-mode-content {
-      background: black;
-      padding: 0;
+    /* Структура чата (обычный режим) */
+    .chat-header-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
-    #chat-body.horror-mode-content img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    .avatar-placeholder {
+      width: 60px;
+      height: 60px;
+      background: #eee;
+      border: 1px dashed #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #666;
+    }
+
+    .contact-name {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .divider {
+      border-top: 1px solid #ccc;
+      margin: 12px 0;
+    }
+
+    .chat-status {
+      text-align: center;
+      font-size: 14px;
+      color: #222;
+      margin-top: 10px;
     }
 
     /* ——— ХОРРОР-РЕЖИМ ——— */
@@ -148,23 +177,19 @@
       border-color: red !important;
     }
 
-    body.horror-mode .section h2 {
+    body.horror-mode .section h2,
+    body.horror-mode .section-content,
+    body.horror-mode #connect-btn,
+    body.horror-mode #chat-header,
+    body.horror-mode .chat-status {
       color: red !important;
-    }
-
-    body.horror-mode .section-content {
-      color: red !important;
-    }
-
-    body.horror-mode #chat-header {
-      background: black !important;
-      color: red !important;
-      border-color: red !important;
+      animation: text-shake 0.05s infinite;
     }
 
     body.horror-mode #chat-body {
       background: black !important;
       border-color: red !important;
+      color: red !important;
     }
 
     body.horror-mode #timer-block {
@@ -173,10 +198,10 @@
       border-color: red !important;
     }
 
-    body.horror-mode #connect-btn {
-      background: black !important;
-      color: red !important;
-      border-color: red !important;
+    @keyframes text-shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-1px); }
+      75% { transform: translateX(1px); }
     }
 
     /* Затемнение */
@@ -199,7 +224,7 @@
       z-index: 99999;
       pointer-events: none;
       opacity: 0;
-      animation: glitch-fade-in 0.1s forwards, glitch-shake-hard 0.8s infinite;
+      animation: glitch-fade-in 0.1s forwards, glitch-shake-hard 0.6s;
     }
 
     @keyframes glitch-fade-in {
@@ -208,19 +233,20 @@
 
     @keyframes glitch-shake-hard {
       0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-10px) rotate(-5deg); }
-      50% { transform: translateX(10px) rotate(5deg); }
-      75% { transform: translateX(-8px) rotate(-3deg); }
+      20% { transform: translateX(-12px) rotate(-6deg); }
+      40% { transform: translateX(12px) rotate(6deg); }
+      60% { transform: translateX(-10px) rotate(-4deg); }
+      80% { transform: translateX(10px) rotate(4deg); }
     }
 
-    /* Фон — медленное покачивание */
+    /* Фон — покачивание */
     body.horror-mode {
       animation: background-sway 8s infinite alternate ease-in-out;
     }
 
     @keyframes background-sway {
-      0% { background-position-x: -10px; }
-      100% { background-position-x: 10px; }
+      0% { background-position-x: -8px; }
+      100% { background-position-x: 8px; }
     }
   </style>
 </head>
@@ -296,7 +322,7 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    // ——— Hover эффекты ———
+    // ——— Hover эффекты (обычный режим) ———
     document.querySelectorAll('.section-content').forEach(el => {
       const def = el.dataset.default;
       const hover = el.dataset.hover;
@@ -311,7 +337,7 @@
       setTimeout(() => this.textContent = this.dataset.default, 2000);
     });
 
-    // ——— Чат ———
+    // ——— Чат (обычный режим) ———
     const chatHeader = document.getElementById('chat-header');
     const chatBody = document.getElementById('chat-body');
     const chatStatus = document.getElementById('chat-status');
@@ -326,7 +352,6 @@
       }
     });
 
-    // ——— Hover на статус ———
     chatStatus.addEventListener('mouseenter', function () {
       this.textContent = 'Подключитесь чтобы сидеть в чате';
     });
@@ -345,8 +370,6 @@
         if (konamiIndex === konamiCode.length) {
           // Фон
           document.body.style.backgroundImage = "url('pic/1222.jpg')";
-          document.body.style.backgroundSize = "cover";
-          document.body.style.backgroundRepeat = "no-repeat";
 
           // Хоррор-режим
           document.body.classList.add('horror-mode');
@@ -360,11 +383,11 @@
             setTimeout(() => overlay.style.display = 'none', 300);
           }, 3000);
 
-          // Звук
+          // Аудио
           const audio = document.getElementById('horror-audio');
           audio.play().catch(e => console.log("Audio play failed:", e));
 
-          // Разрешить скролл
+          // Скролл
           document.body.style.overflow = 'auto';
 
           // Глитч-изображения
@@ -377,7 +400,7 @@
             img.style.top = Math.random() * (window.innerHeight - 200) + 'px';
             img.style.left = Math.random() * (window.innerWidth - 200) + 'px';
             document.body.appendChild(img);
-            setTimeout(() => img.remove(), 1000); // исчезает через 1 сек
+            setTimeout(() => img.remove(), 1000);
           }, 10000);
 
           // ——— Текст → японский ———
@@ -390,18 +413,20 @@
             el.dataset.default_jp = 'ネットに接続されていません！';
             el.dataset.hover_jp = el.dataset.hover.includes('читать') ? '読む前にネットに接続してください' : '聴く前にネットに接続してください';
             el.textContent = el.dataset.default_jp;
-            el.addEventListener('mouseenter', () => el.textContent = el.dataset.hover_jp);
-            el.addEventListener('mouseleave', () => el.textContent = el.dataset.default_jp);
+            el.onmouseenter = () => el.textContent = el.dataset.hover_jp;
+            el.onmouseleave = () => el.textContent = el.dataset.default_jp;
           });
 
           chatHeader.textContent = '▼ チャット';
+          chatStatus.textContent = 'ネットに接続されていません！';
+          chatStatus.onmouseenter = () => chatStatus.textContent = 'チャットに参加するには接続してください';
+          chatStatus.onmouseleave = () => chatStatus.textContent = 'ネットに接続されていません！';
 
-          // ——— Замена содержимого чата на фото ———
-          chatBody.innerHTML = '<img src="pic/hahaha4.jpg" alt="Hahaha4">';
-          chatBody.classList.add('horror-mode-content');
-          chatBody.classList.remove('show'); // закрыть, если был открыт
+          // ——— Замена содержимого чата на ПУСТОЙ ———
+          chatBody.innerHTML = ''; // ← пусто
+          chatBody.classList.remove('show');
 
-          // Переприсвоим обработчик
+          // Обновляем обработчик чата
           chatHeader.onclick = function() {
             if (chatBody.classList.contains('show')) {
               chatBody.classList.remove('show');
@@ -417,11 +442,6 @@
       } else {
         konamiIndex = 0;
       }
-    });
-
-    // ——— Кнопка подключения ———
-    document.getElementById('connect-btn').addEventListener('click', function () {
-      // Заглушка
     });
   </script>
 
