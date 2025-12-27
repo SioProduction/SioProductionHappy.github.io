@@ -25,7 +25,7 @@
       position: relative;
     }
 
-    /* Таймер + часы */
+    /* Таймер */
     #timer-block {
       position: absolute;
       top: 20px;
@@ -103,8 +103,8 @@
       cursor: default;
     }
 
-    /* Новая кнопка ЧАТА (заменяет старый чат) */
-    #chat-btn {
+    /* === КНОПКА ЧАТА === */
+    #chat-toggle {
       position: fixed;
       bottom: 20px;
       right: 20px;
@@ -121,14 +121,69 @@
       width: 80px;
     }
 
-    body.horror-mode #chat-btn {
+    body.horror-mode #chat-toggle {
       background: black;
       border-color: red;
       color: red;
       animation: text-shake 0.05s infinite;
     }
 
-    /* Горрор-стили */
+    /* === ОКНО ЧАТА === */
+    #chat-window {
+      position: fixed;
+      bottom: -320px;
+      right: 20px;
+      width: 560px;
+      height: 300px;
+      background: white;
+      border: 2px solid #888;
+      border-top: none;
+      z-index: 199;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      transition: bottom 0.3s ease;
+    }
+
+    #chat-window.open {
+      bottom: 60px;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .avatar-placeholder {
+      width: 60px;
+      height: 60px;
+      background: #eee;
+      border: 1px dashed #999;
+      flex-shrink: 0;
+    }
+
+    .contact-name {
+      font-weight: bold;
+      font-size: 16px;
+      color: #000;
+    }
+
+    .chat-divider {
+      height: 1px;
+      background: #ccc;
+      margin: 0 0 14px 0;
+    }
+
+    .chat-messages {
+      flex: 1;
+      font-size: 14px;
+      color: #222;
+      cursor: default;
+    }
+
+    /* === Horror-mode стили === */
     body.horror-mode #main-block {
       background: black !important;
       border-color: red !important;
@@ -136,6 +191,17 @@
 
     body.horror-mode .section h2,
     body.horror-mode .section-content {
+      color: red !important;
+      animation: text-shake 0.05s infinite;
+    }
+
+    body.horror-mode #chat-window {
+      background: black !important;
+      border-color: red !important;
+    }
+
+    body.horror-mode .contact-name,
+    body.horror-mode .chat-messages {
       color: red !important;
       animation: text-shake 0.05s infinite;
     }
@@ -209,6 +275,7 @@
     <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
   </div>
 
+  <!-- Кнопка подключения -->
   <div id="connect-btn">Подключиться к сети</div>
 
   <!-- Основной блок -->
@@ -227,8 +294,16 @@
     </div>
   </div>
 
-  <!-- НОВАЯ КНОПКА ЧАТА -->
-  <div id="chat-btn">CHAT</div>
+  <!-- Чат: кнопка и окно -->
+  <div id="chat-toggle">▼ CHAT</div>
+  <div id="chat-window">
+    <div class="chat-header">
+      <div class="avatar-placeholder"></div>
+      <div class="contact-name">???</div>
+    </div>
+    <div class="chat-divider"></div>
+    <div class="chat-messages" id="chat-messages">Нет подключения к интернету</div>
+  </div>
 
   <!-- Затемнение -->
   <div id="overlay"></div>
@@ -262,7 +337,7 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    // ——— Hover эффекты ———
+    // ——— Hover для блоков ———
     document.querySelectorAll('.section-content').forEach(el => {
       const def = el.dataset.default;
       const hover = el.dataset.hover;
@@ -270,7 +345,7 @@
       el.addEventListener('mouseleave', () => el.textContent = def);
     });
 
-    // ——— CLICK: "Подключиться к сети" ———
+    // ——— Кнопка "Подключиться к сети" ———
     const connectBtn = document.getElementById('connect-btn');
     connectBtn.addEventListener('click', () => {
       if (document.body.classList.contains('horror-mode')) {
@@ -280,18 +355,38 @@
       }
     });
 
-    // ——— CLICK: Кнопка чата → открывает hahaha4.jpg в полноэкране ———
-    document.getElementById('chat-btn').addEventListener('click', () => {
-      const imgWin = window.open('', '_blank', 'fullscreen=yes,location=no,menubar=no,toolbar=no,status=no');
-      imgWin.document.write(`
-        <!DOCTYPE html>
-        <html><head><style>body{margin:0;overflow:hidden;background:black;}img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;}</style></head>
-        <body><img src="pic/hahaha4.jpg"></body></html>
-      `);
-      imgWin.document.close();
+    // ——— Чат ———
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatWindow = document.getElementById('chat-window');
+    const chatMessages = document.getElementById('chat-messages');
+
+    let isChatOpen = false;
+
+    const defaultText = "Нет подключения к интернету";
+    const hoverText = "Подключитесь, чтобы общаться с другими";
+
+    chatMessages.textContent = defaultText;
+
+    chatMessages.addEventListener('mouseenter', () => {
+      chatMessages.textContent = hoverText;
     });
 
-    // ——— Код Конами ———
+    chatMessages.addEventListener('mouseleave', () => {
+      chatMessages.textContent = defaultText;
+    });
+
+    chatToggle.addEventListener('click', () => {
+      if (isChatOpen) {
+        chatWindow.classList.remove('open');
+        chatToggle.textContent = document.body.classList.contains('horror-mode') ? '▼ チャット' : '▼ CHAT';
+      } else {
+        chatWindow.classList.add('open');
+        chatToggle.textContent = document.body.classList.contains('horror-mode') ? '▲ チャット' : '▲ CHAT';
+      }
+      isChatOpen = !isChatOpen;
+    });
+
+    // ——— Konami Code ———
     let konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
     let konamiIndex = 0;
 
@@ -302,7 +397,7 @@
           // Фон
           document.body.style.backgroundImage = "url('pic/1222.jpg')";
 
-          // Хоррор-режим
+          // Активация злого режима
           document.body.classList.add('horror-mode');
 
           // Затемнение
@@ -318,10 +413,10 @@
           const audio = document.getElementById('horror-audio');
           audio.play().catch(e => console.log("Audio play failed:", e));
 
-          // Скролл разблок
+          // Разблокировка скролла
           document.body.style.overflow = 'auto';
 
-          // Глитч изображения
+          // Глитч-изображения
           setInterval(() => {
             const images = ['pic/hahah2.jpg', 'pic/haha1.png', 'pic/hahaha3.png'];
             const img = document.createElement('img');
@@ -334,8 +429,9 @@
             setTimeout(() => img.remove(), 1000);
           }, 10000);
 
-          // Перевод текстов на японский
+          // Перевод текстов
           connectBtn.textContent = 'ネットに接続';
+
           document.querySelector('.section:nth-of-type(1) h2').textContent = 'ファストフォーラム';
           document.querySelector('.section:nth-of-type(2) h2').textContent = '今日の音楽';
           document.querySelector('.section:nth-of-type(3) h2').textContent = '今日のニュース';
@@ -348,7 +444,21 @@
             el.onmouseleave = () => el.textContent = el.dataset.default_jp;
           });
 
-          document.getElementById('chat-btn').textContent = 'チャット';
+          // Обновление чата
+          document.querySelector('.contact-name').textContent = '???';
+          chatMessages.dataset.default_jp = 'インターネットに接続されていません';
+          chatMessages.dataset.hover_jp = '他の人と話すには接続してください';
+          chatMessages.textContent = chatMessages.dataset.default_jp;
+
+          chatMessages.onmouseenter = () => chatMessages.textContent = chatMessages.dataset.hover_jp;
+          chatMessages.onmouseleave = () => chatMessages.textContent = chatMessages.dataset.default_jp;
+
+          // Кнопка чата
+          if (!isChatOpen) {
+            chatToggle.textContent = '▼ チャット';
+          } else {
+            chatToggle.textContent = '▲ チャット';
+          }
 
           konamiIndex = 0;
         }
