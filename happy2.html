@@ -111,62 +111,6 @@
       z-index: 200;
     }
 
-    #chat-body {
-      position: fixed;
-      bottom: 26px;
-      right: 20px;
-      width: 560px;
-      height: 270px;
-      background: white;
-      border: 2px solid #888;
-      padding: 12px;
-      font-size: 12px;
-      color: black;
-      z-index: 200;
-      display: none;
-    }
-
-    #chat-body.show {
-      display: block;
-    }
-
-    /* Структура внутри чата */
-    .chat-header-line {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .avatar-placeholder {
-      width: 60px;
-      height: 60px;
-      background: #eee;
-      border: 1px dashed #999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      color: #666;
-    }
-
-    .contact-name {
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .divider {
-      border-top: 1px solid #ccc;
-      margin: 12px 0;
-    }
-
-    .chat-status {
-      text-align: center;
-      font-size: 14px;
-      color: #222;
-      margin-top: 10px;
-    }
-
     /* ——— ХОРРОР-РЕЖИМ ——— */
     body.horror-mode #main-block {
       background: black !important;
@@ -182,12 +126,6 @@
     }
 
     body.horror-mode #chat-header {
-      background: black !important;
-      color: red !important;
-      border-color: red !important;
-    }
-
-    body.horror-mode #chat-body {
       background: black !important;
       color: red !important;
       border-color: red !important;
@@ -224,13 +162,34 @@
       position: fixed;
       z-index: 99999;
       pointer-events: none;
-      animation: glitch-shake 0.5s ease-in-out;
+      animation: glitch-shake-hard 0.5s ease-in-out;
     }
 
-    @keyframes glitch-shake {
-      0% { transform: scale(1) rotate(0deg); }
-      50% { transform: scale(1.1) rotate(5deg); }
-      100% { transform: scale(1) rotate(0deg); }
+    @keyframes glitch-shake-hard {
+      0% { transform: scale(1) rotate(0deg) translate(0,0); }
+      25% { transform: scale(1.2) rotate(10deg) translate(5px, -5px); }
+      50% { transform: scale(1) rotate(-10deg) translate(-5px, 5px); }
+      75% { transform: scale(1.2) rotate(5deg) translate(3px, 3px); }
+      100% { transform: scale(1) rotate(0deg) translate(0,0); }
+    }
+
+    /* Полноэкранное окно чата */
+    #full-chat-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 99998;
+      display: none;
+      cursor: pointer;
+    }
+
+    #full-chat-modal img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   </style>
 </head>
@@ -263,22 +222,19 @@
     </div>
   </div>
 
-  <!-- ЧАТ -->
+  <!-- ЧАТ (заголовок) -->
   <div id="chat-header">▼ CHAT</div>
-  <div id="chat-body">
-    <div class="chat-header-line">
-      <div class="avatar-placeholder">AVATAR</div>
-      <div class="contact-name">???</div>
-    </div>
-    <div class="divider"></div>
-    <div class="chat-status" id="chat-status">Вы не подключены к сети!</div>
-  </div>
 
   <!-- Затемнение -->
   <div id="overlay" style="display: none;"></div>
 
   <!-- Аудио -->
-  <audio id="horror-audio" src="pic/wowowow.mp3" loop></audio>
+  <audio id="horror-audio" src="audio/wowowow.mp3" loop></audio>
+
+  <!-- Полноэкранное окно чата -->
+  <div id="full-chat-modal">
+    <img src="pic/hahaha4.jpg" alt="Full Chat">
+  </div>
 
   <script>
     // ——— ВРЕМЯ ———
@@ -323,26 +279,30 @@
 
     // ——— Чат ———
     const chatHeader = document.getElementById('chat-header');
-    const chatBody = document.getElementById('chat-body');
-    const chatStatus = document.getElementById('chat-status');
+    const fullChatModal = document.getElementById('full-chat-modal');
 
     chatHeader.addEventListener('click', function () {
-      if (chatBody.classList.contains('show')) {
-        chatBody.classList.remove('show');
+      if (fullChatModal.style.display === 'block') {
+        fullChatModal.style.display = 'none';
         chatHeader.textContent = '▼ CHAT';
       } else {
-        chatBody.classList.add('show');
+        fullChatModal.style.display = 'block';
         chatHeader.textContent = '▲ CHAT';
       }
     });
 
-    // ——— Hover на статус ———
-    chatStatus.addEventListener('mouseenter', function () {
-      this.textContent = 'Подключитесь чтобы сидеть в чате';
+    // Закрытие по клику
+    fullChatModal.addEventListener('click', function () {
+      this.style.display = 'none';
+      chatHeader.textContent = '▼ CHAT';
     });
 
-    chatStatus.addEventListener('mouseleave', function () {
-      this.textContent = 'Вы не подключены к сети!';
+    // Закрытие по Esc
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && fullChatModal.style.display === 'block') {
+        fullChatModal.style.display = 'none';
+        chatHeader.textContent = '▼ CHAT';
+      }
     });
 
     // ——— Код Конами ———
@@ -375,7 +335,10 @@
 
           // Запускаем звук
           const audio = document.getElementById('horror-audio');
-          audio.play().catch(e => console.log("Audio play failed:", e));
+          audio.play().catch(e => {
+            console.log("Audio play failed:", e);
+            alert("Звук не может быть воспроизведён. Попробуйте разрешить звук в браузере.");
+          });
 
           // Разрешаем скроллинг
           document.body.style.overflow = 'auto';
@@ -395,7 +358,7 @@
             img.style.width = Math.random() * 200 + 100 + 'px';
             img.style.top = Math.random() * window.innerHeight + 'px';
             img.style.left = Math.random() * window.innerWidth + 'px';
-            img.style.transform = 'scale(1.1) rotate(5deg)';
+            img.style.transform = 'scale(1.2) rotate(10deg)';
             document.body.appendChild(img);
             setTimeout(() => {
               img.remove();
@@ -416,13 +379,19 @@
             el.addEventListener('mouseleave', () => el.textContent = el.dataset.default_jp);
           });
 
-          chatHeader.textContent = '▼ チャット';
-          chatStatus.textContent = 'ネットに接続されていません！';
-          chatStatus.addEventListener('mouseenter', () => chatStatus.textContent = 'チャットに参加するには接続してください');
-          chatStatus.addEventListener('mouseleave', () => chatStatus.textContent = 'ネットに接続されていません！');
+          chatHeader.textContent = '▼ チャット'; // Изменяем текст кнопки
 
-          document.querySelector('.avatar-placeholder').textContent = 'アバター';
-          document.querySelector('.contact-name').textContent = '???';
+          // При клике — открываем полноэкранное окно
+          chatHeader.removeEventListener('click', function(){}); // Убираем старый обработчик
+          chatHeader.addEventListener('click', function () {
+            if (fullChatModal.style.display === 'block') {
+              fullChatModal.style.display = 'none';
+              chatHeader.textContent = '▼ チャット';
+            } else {
+              fullChatModal.style.display = 'block';
+              chatHeader.textContent = '▲ チャット';
+            }
+          });
 
           konamiIndex = 0;
         }
