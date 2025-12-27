@@ -113,30 +113,58 @@
 
     #chat-body {
       position: fixed;
-      bottom: 26px; /* сразу над заголовком */
+      bottom: 26px; /* над заголовком */
       right: 20px;
       width: 560px;
-      height: 250px;
+      height: 230px; /* ↓ уменьшено, чтобы не заходить за кнопку */
       background: white;
-      border: 2px solid #888;
-      border-top: none;
+      border: 2px solid #888; /* все стороны */
       padding: 12px;
       font-size: 12px;
       color: black;
       z-index: 200;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
+      display: none; /* мгновенно */
     }
 
     #chat-body.show {
-      opacity: 1;
-      visibility: visible;
+      display: block;
     }
 
-    #chat-contact {
+    /* Структура внутри чата */
+    .chat-header-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .avatar-placeholder {
+      width: 60px;
+      height: 60px;
+      background: #eee;
+      border: 1px dashed #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #666;
+    }
+
+    .contact-name {
       font-weight: bold;
-      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .divider {
+      border-top: 1px solid #ccc;
+      margin: 12px 0;
+    }
+
+    .chat-status {
+      text-align: center;
+      font-size: 14px;
+      color: #222;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -172,7 +200,12 @@
   <!-- ЧАТ -->
   <div id="chat-header">▼ CHAT</div>
   <div id="chat-body">
-    <div id="chat-contact">???</div>
+    <div class="chat-header-line">
+      <div class="avatar-placeholder">AVATAR</div>
+      <div class="contact-name">???</div>
+    </div>
+    <div class="divider"></div>
+    <div class="chat-status" id="chat-status">Вы не подключены к сети!</div>
   </div>
 
   <script>
@@ -219,6 +252,7 @@
     // ——— Чат ———
     const chatHeader = document.getElementById('chat-header');
     const chatBody = document.getElementById('chat-body');
+    const chatStatus = document.getElementById('chat-status');
 
     chatHeader.addEventListener('click', function () {
       if (chatBody.classList.contains('show')) {
@@ -230,6 +264,15 @@
       }
     });
 
+    // ——— Hover на статус ———
+    chatStatus.addEventListener('mouseenter', function () {
+      this.textContent = 'Подключитесь чтобы сидеть в чате';
+    });
+
+    chatStatus.addEventListener('mouseleave', function () {
+      this.textContent = 'Вы не подключены к сети!';
+    });
+
     // ——— Код Конами ———
     let konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→B A
     let konamiIndex = 0;
@@ -238,11 +281,9 @@
       if (e.keyCode === konamiCode[konamiIndex]) {
         konamiIndex++;
         if (konamiIndex === konamiCode.length) {
-          // Меняем фон на 1222.jpg — один раз, навсегда
           document.body.style.backgroundImage = "url('pic/1222.jpg')";
           document.body.style.backgroundSize = "100% 100%";
           document.body.style.backgroundRepeat = "no-repeat";
-          document.body.style.backgroundAttachment = "scroll";
           konamiIndex = 0;
         }
       } else {
