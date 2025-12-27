@@ -111,6 +111,37 @@
       z-index: 200;
     }
 
+    #chat-body {
+      position: fixed;
+      bottom: 26px;
+      right: 20px;
+      width: 560px;
+      height: 270px;
+      background: white;
+      border: 2px solid #888;
+      border-top: none;
+      z-index: 200;
+      display: none;
+      overflow: hidden;
+    }
+
+    #chat-body.show {
+      display: block;
+    }
+
+    /* В злом режиме — фото вместо текста */
+    #chat-body.horror-mode-content {
+      background: black;
+      padding: 0;
+    }
+
+    #chat-body.horror-mode-content img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
     /* ——— ХОРРОР-РЕЖИМ ——— */
     body.horror-mode #main-block {
       background: black !important;
@@ -128,6 +159,11 @@
     body.horror-mode #chat-header {
       background: black !important;
       color: red !important;
+      border-color: red !important;
+    }
+
+    body.horror-mode #chat-body {
+      background: black !important;
       border-color: red !important;
     }
 
@@ -162,34 +198,29 @@
       position: fixed;
       z-index: 99999;
       pointer-events: none;
-      animation: glitch-shake-hard 0.5s ease-in-out;
+      opacity: 0;
+      animation: glitch-fade-in 0.1s forwards, glitch-shake-hard 0.8s infinite;
+    }
+
+    @keyframes glitch-fade-in {
+      to { opacity: 1; }
     }
 
     @keyframes glitch-shake-hard {
-      0% { transform: scale(1) rotate(0deg) translate(0,0); }
-      25% { transform: scale(1.2) rotate(10deg) translate(5px, -5px); }
-      50% { transform: scale(1) rotate(-10deg) translate(-5px, 5px); }
-      75% { transform: scale(1.2) rotate(5deg) translate(3px, 3px); }
-      100% { transform: scale(1) rotate(0deg) translate(0,0); }
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px) rotate(-5deg); }
+      50% { transform: translateX(10px) rotate(5deg); }
+      75% { transform: translateX(-8px) rotate(-3deg); }
     }
 
-    /* Полноэкранное окно чата */
-    #full-chat-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      z-index: 99998;
-      display: none;
-      cursor: pointer;
+    /* Фон — медленное покачивание */
+    body.horror-mode {
+      animation: background-sway 8s infinite alternate ease-in-out;
     }
 
-    #full-chat-modal img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    @keyframes background-sway {
+      0% { background-position-x: -10px; }
+      100% { background-position-x: 10px; }
     }
   </style>
 </head>
@@ -222,19 +253,22 @@
     </div>
   </div>
 
-  <!-- ЧАТ (заголовок) -->
+  <!-- ЧАТ -->
   <div id="chat-header">▼ CHAT</div>
+  <div id="chat-body">
+    <div class="chat-header-line">
+      <div class="avatar-placeholder">AVATAR</div>
+      <div class="contact-name">???</div>
+    </div>
+    <div class="divider"></div>
+    <div class="chat-status" id="chat-status">Вы не подключены к сети!</div>
+  </div>
 
   <!-- Затемнение -->
   <div id="overlay" style="display: none;"></div>
 
   <!-- Аудио -->
   <audio id="horror-audio" src="audio/wowowow.mp3" loop></audio>
-
-  <!-- Полноэкранное окно чата -->
-  <div id="full-chat-modal">
-    <img src="pic/hahaha4.jpg" alt="Full Chat">
-  </div>
 
   <script>
     // ——— ВРЕМЯ ———
@@ -279,30 +313,26 @@
 
     // ——— Чат ———
     const chatHeader = document.getElementById('chat-header');
-    const fullChatModal = document.getElementById('full-chat-modal');
+    const chatBody = document.getElementById('chat-body');
+    const chatStatus = document.getElementById('chat-status');
 
     chatHeader.addEventListener('click', function () {
-      if (fullChatModal.style.display === 'block') {
-        fullChatModal.style.display = 'none';
+      if (chatBody.classList.contains('show')) {
+        chatBody.classList.remove('show');
         chatHeader.textContent = '▼ CHAT';
       } else {
-        fullChatModal.style.display = 'block';
+        chatBody.classList.add('show');
         chatHeader.textContent = '▲ CHAT';
       }
     });
 
-    // Закрытие по клику
-    fullChatModal.addEventListener('click', function () {
-      this.style.display = 'none';
-      chatHeader.textContent = '▼ CHAT';
+    // ——— Hover на статус ———
+    chatStatus.addEventListener('mouseenter', function () {
+      this.textContent = 'Подключитесь чтобы сидеть в чате';
     });
 
-    // Закрытие по Esc
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && fullChatModal.style.display === 'block') {
-        fullChatModal.style.display = 'none';
-        chatHeader.textContent = '▼ CHAT';
-      }
+    chatStatus.addEventListener('mouseleave', function () {
+      this.textContent = 'Вы не подключены к сети!';
     });
 
     // ——— Код Конами ———
@@ -313,59 +343,44 @@
       if (e.keyCode === konamiCode[konamiIndex]) {
         konamiIndex++;
         if (konamiIndex === konamiCode.length) {
-          // Меняем фон
+          // Фон
           document.body.style.backgroundImage = "url('pic/1222.jpg')";
-          document.body.style.backgroundSize = "100% 100%";
+          document.body.style.backgroundSize = "cover";
           document.body.style.backgroundRepeat = "no-repeat";
 
-          // Включаем хоррор-режим
+          // Хоррор-режим
           document.body.classList.add('horror-mode');
 
           // Затемнение
           const overlay = document.getElementById('overlay');
           overlay.style.display = 'block';
           overlay.style.opacity = '0.8';
-
           setTimeout(() => {
             overlay.style.opacity = '0';
-            setTimeout(() => {
-              overlay.style.display = 'none';
-            }, 300);
+            setTimeout(() => overlay.style.display = 'none', 300);
           }, 3000);
 
-          // Запускаем звук
+          // Звук
           const audio = document.getElementById('horror-audio');
-          audio.play().catch(e => {
-            console.log("Audio play failed:", e);
-            alert("Звук не может быть воспроизведён. Попробуйте разрешить звук в браузере.");
-          });
+          audio.play().catch(e => console.log("Audio play failed:", e));
 
-          // Разрешаем скроллинг
+          // Разрешить скролл
           document.body.style.overflow = 'auto';
-          document.body.style.height = 'auto';
-          document.body.style.minHeight = '100vh';
 
-          // Запускаем глитч-изображения каждые 10 секунд
+          // Глитч-изображения
           setInterval(() => {
-            const images = [
-              'pic/hahah2.jpg',
-              'pic/haha1.png',
-              'pic/hahaha3.png'
-            ];
+            const images = ['pic/hahah2.jpg', 'pic/haha1.png', 'pic/hahaha3.png'];
             const img = document.createElement('img');
             img.src = images[Math.floor(Math.random() * images.length)];
             img.className = 'glitch-img';
-            img.style.width = Math.random() * 200 + 100 + 'px';
-            img.style.top = Math.random() * window.innerHeight + 'px';
-            img.style.left = Math.random() * window.innerWidth + 'px';
-            img.style.transform = 'scale(1.2) rotate(10deg)';
+            img.style.width = (Math.random() * 150 + 100) + 'px';
+            img.style.top = Math.random() * (window.innerHeight - 200) + 'px';
+            img.style.left = Math.random() * (window.innerWidth - 200) + 'px';
             document.body.appendChild(img);
-            setTimeout(() => {
-              img.remove();
-            }, 1500);
+            setTimeout(() => img.remove(), 1000); // исчезает через 1 сек
           }, 10000);
 
-          // Меняем текст на японский
+          // ——— Текст → японский ———
           document.getElementById('connect-btn').textContent = 'ネットに接続';
           document.querySelector('.section:nth-of-type(1) h2').textContent = 'ファストフォーラム';
           document.querySelector('.section:nth-of-type(2) h2').textContent = '今日の音楽';
@@ -379,19 +394,23 @@
             el.addEventListener('mouseleave', () => el.textContent = el.dataset.default_jp);
           });
 
-          chatHeader.textContent = '▼ チャット'; // Изменяем текст кнопки
+          chatHeader.textContent = '▼ チャット';
 
-          // При клике — открываем полноэкранное окно
-          chatHeader.removeEventListener('click', function(){}); // Убираем старый обработчик
-          chatHeader.addEventListener('click', function () {
-            if (fullChatModal.style.display === 'block') {
-              fullChatModal.style.display = 'none';
+          // ——— Замена содержимого чата на фото ———
+          chatBody.innerHTML = '<img src="pic/hahaha4.jpg" alt="Hahaha4">';
+          chatBody.classList.add('horror-mode-content');
+          chatBody.classList.remove('show'); // закрыть, если был открыт
+
+          // Переприсвоим обработчик
+          chatHeader.onclick = function() {
+            if (chatBody.classList.contains('show')) {
+              chatBody.classList.remove('show');
               chatHeader.textContent = '▼ チャット';
             } else {
-              fullChatModal.style.display = 'block';
+              chatBody.classList.add('show');
               chatHeader.textContent = '▲ チャット';
             }
-          });
+          };
 
           konamiIndex = 0;
         }
