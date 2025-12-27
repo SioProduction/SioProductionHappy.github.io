@@ -116,7 +116,7 @@
       bottom: 26px;
       right: 20px;
       width: 560px;
-      height: 270px; /* ↑ выше */
+      height: 270px;
       background: white;
       border: 2px solid #888;
       padding: 12px;
@@ -218,6 +218,20 @@
       pointer-events: none;
       transition: opacity 0.3s ease;
     }
+
+    /* Глитч-изображения */
+    .glitch-img {
+      position: fixed;
+      z-index: 99999;
+      pointer-events: none;
+      animation: glitch-shake 0.5s ease-in-out;
+    }
+
+    @keyframes glitch-shake {
+      0% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.1) rotate(5deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
   </style>
 </head>
 <body>
@@ -231,37 +245,40 @@
     <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
   </div>
 
-  <div id="connect-btn">Подключиться к сети</div>
+  <div id="connect-btn">ネットに接続</div>
 
   <!-- Основной блок -->
   <div id="main-block">
     <div class="section">
-      <h2>FastForum</h2>
-      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как читать">Вы не подключены к сети!</div>
+      <h2>ファストフォーラム</h2>
+      <div class="section-content" data-default="ネットに接続されていません！" data-hover="読む前にネットに接続してください">ネットに接続されていません！</div>
     </div>
     <div class="section">
-      <h2>Музыка дня</h2>
-      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как слушать">Вы не подключены к сети!</div>
+      <h2>今日の音楽</h2>
+      <div class="section-content" data-default="ネットに接続されていません！" data-hover="聴く前にネットに接続してください">ネットに接続されていません！</div>
     </div>
     <div class="section">
-      <h2>Новости дня</h2>
-      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как читать">Вы не подключены к сети!</div>
+      <h2>今日のニュース</h2>
+      <div class="section-content" data-default="ネットに接続されていません！" data-hover="読む前にネットに接続してください">ネットに接続されていません！</div>
     </div>
   </div>
 
   <!-- ЧАТ -->
-  <div id="chat-header">▼ CHAT</div>
+  <div id="chat-header">▼ チャット</div>
   <div id="chat-body">
     <div class="chat-header-line">
-      <div class="avatar-placeholder">AVATAR</div>
+      <div class="avatar-placeholder">アバター</div>
       <div class="contact-name">???</div>
     </div>
     <div class="divider"></div>
-    <div class="chat-status" id="chat-status">Вы не подключены к сети!</div>
+    <div class="chat-status" id="chat-status">ネットに接続されていません！</div>
   </div>
 
   <!-- Затемнение -->
   <div id="overlay" style="display: none;"></div>
+
+  <!-- Аудио -->
+  <audio id="horror-audio" src="pic/wowowow.mp3" loop></audio>
 
   <script>
     // ——— ВРЕМЯ ———
@@ -300,7 +317,7 @@
     // ——— Click на FastForum ———
     document.querySelector('.section:nth-of-type(1) .section-content').addEventListener('click', function () {
       const orig = this.textContent;
-      this.textContent = 'Подключитесь к сети перед тем как читать';
+      this.textContent = '読む前にネットに接続してください';
       setTimeout(() => this.textContent = this.dataset.default, 2000);
     });
 
@@ -312,20 +329,20 @@
     chatHeader.addEventListener('click', function () {
       if (chatBody.classList.contains('show')) {
         chatBody.classList.remove('show');
-        chatHeader.textContent = '▼ CHAT';
+        chatHeader.textContent = '▼ チャット';
       } else {
         chatBody.classList.add('show');
-        chatHeader.textContent = '▲ CHAT';
+        chatHeader.textContent = '▲ チャット';
       }
     });
 
     // ——— Hover на статус ———
     chatStatus.addEventListener('mouseenter', function () {
-      this.textContent = 'Подключитесь чтобы сидеть в чате';
+      this.textContent = 'チャットに参加するには接続してください';
     });
 
     chatStatus.addEventListener('mouseleave', function () {
-      this.textContent = 'Вы не подключены к сети!';
+      this.textContent = 'ネットに接続されていません！';
     });
 
     // ——— Код Конами ———
@@ -353,9 +370,37 @@
             overlay.style.opacity = '0';
             setTimeout(() => {
               overlay.style.display = 'none';
-              // Оставляем horror-mode активным
             }, 300);
           }, 3000);
+
+          // Запускаем звук
+          const audio = document.getElementById('horror-audio');
+          audio.play().catch(e => console.log("Audio play failed:", e));
+
+          // Разрешаем скроллинг
+          document.body.style.overflow = 'auto';
+          document.body.style.height = 'auto';
+          document.body.style.minHeight = '100vh';
+
+          // Запускаем глитч-изображения каждые 10 секунд
+          setInterval(() => {
+            const images = [
+              'pic/hahah2.jpg',
+              'pic/haha1.png',
+              'pic/hahaha3.png'
+            ];
+            const img = document.createElement('img');
+            img.src = images[Math.floor(Math.random() * images.length)];
+            img.className = 'glitch-img';
+            img.style.width = Math.random() * 200 + 100 + 'px';
+            img.style.top = Math.random() * window.innerHeight + 'px';
+            img.style.left = Math.random() * window.innerWidth + 'px';
+            img.style.transform = 'scale(1.1) rotate(5deg)';
+            document.body.appendChild(img);
+            setTimeout(() => {
+              img.remove();
+            }, 1500);
+          }, 10000);
 
           konamiIndex = 0;
         }
