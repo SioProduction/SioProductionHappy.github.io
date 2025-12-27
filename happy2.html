@@ -245,33 +245,33 @@
     <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
   </div>
 
-  <div id="connect-btn">ネットに接続</div>
+  <div id="connect-btn">Подключиться к сети</div>
 
   <!-- Основной блок -->
   <div id="main-block">
     <div class="section">
-      <h2>ファストフォーラム</h2>
-      <div class="section-content" data-default="ネットに接続されていません！" data-hover="読む前にネットに接続してください">ネットに接続されていません！</div>
+      <h2>FastForum</h2>
+      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как читать">Вы не подключены к сети!</div>
     </div>
     <div class="section">
-      <h2>今日の音楽</h2>
-      <div class="section-content" data-default="ネットに接続されていません！" data-hover="聴く前にネットに接続してください">ネットに接続されていません！</div>
+      <h2>Музыка дня</h2>
+      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как слушать">Вы не подключены к сети!</div>
     </div>
     <div class="section">
-      <h2>今日のニュース</h2>
-      <div class="section-content" data-default="ネットに接続されていません！" data-hover="読む前にネットに接続してください">ネットに接続されていません！</div>
+      <h2>Новости дня</h2>
+      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как читать">Вы не подключены к сети!</div>
     </div>
   </div>
 
   <!-- ЧАТ -->
-  <div id="chat-header">▼ チャット</div>
+  <div id="chat-header">▼ CHAT</div>
   <div id="chat-body">
     <div class="chat-header-line">
-      <div class="avatar-placeholder">アバター</div>
+      <div class="avatar-placeholder">AVATAR</div>
       <div class="contact-name">???</div>
     </div>
     <div class="divider"></div>
-    <div class="chat-status" id="chat-status">ネットに接続されていません！</div>
+    <div class="chat-status" id="chat-status">Вы не подключены к сети!</div>
   </div>
 
   <!-- Затемнение -->
@@ -317,7 +317,7 @@
     // ——— Click на FastForum ———
     document.querySelector('.section:nth-of-type(1) .section-content').addEventListener('click', function () {
       const orig = this.textContent;
-      this.textContent = '読む前にネットに接続してください';
+      this.textContent = 'Подключитесь к сети перед тем как читать';
       setTimeout(() => this.textContent = this.dataset.default, 2000);
     });
 
@@ -329,20 +329,20 @@
     chatHeader.addEventListener('click', function () {
       if (chatBody.classList.contains('show')) {
         chatBody.classList.remove('show');
-        chatHeader.textContent = '▼ チャット';
+        chatHeader.textContent = '▼ CHAT';
       } else {
         chatBody.classList.add('show');
-        chatHeader.textContent = '▲ チャット';
+        chatHeader.textContent = '▲ CHAT';
       }
     });
 
     // ——— Hover на статус ———
     chatStatus.addEventListener('mouseenter', function () {
-      this.textContent = 'チャットに参加するには接続してください';
+      this.textContent = 'Подключитесь чтобы сидеть в чате';
     });
 
     chatStatus.addEventListener('mouseleave', function () {
-      this.textContent = 'ネットに接続されていません！';
+      this.textContent = 'Вы не подключены к сети!';
     });
 
     // ——— Код Конами ———
@@ -401,6 +401,28 @@
               img.remove();
             }, 1500);
           }, 10000);
+
+          // Меняем текст на японский
+          document.getElementById('connect-btn').textContent = 'ネットに接続';
+          document.querySelector('.section:nth-of-type(1) h2').textContent = 'ファストフォーラム';
+          document.querySelector('.section:nth-of-type(2) h2').textContent = '今日の音楽';
+          document.querySelector('.section:nth-of-type(3) h2').textContent = '今日のニュース';
+
+          document.querySelectorAll('.section-content').forEach(el => {
+            el.dataset.default_jp = 'ネットに接続されていません！';
+            el.dataset.hover_jp = el.dataset.hover.includes('читать') ? '読む前にネットに接続してください' : '聴く前にネットに接続してください';
+            el.textContent = el.dataset.default_jp;
+            el.addEventListener('mouseenter', () => el.textContent = el.dataset.hover_jp);
+            el.addEventListener('mouseleave', () => el.textContent = el.dataset.default_jp);
+          });
+
+          chatHeader.textContent = '▼ チャット';
+          chatStatus.textContent = 'ネットに接続されていません！';
+          chatStatus.addEventListener('mouseenter', () => chatStatus.textContent = 'チャットに参加するには接続してください');
+          chatStatus.addEventListener('mouseleave', () => chatStatus.textContent = 'ネットに接続されていません！');
+
+          document.querySelector('.avatar-placeholder').textContent = 'アバター';
+          document.querySelector('.contact-name').textContent = '???';
 
           konamiIndex = 0;
         }
