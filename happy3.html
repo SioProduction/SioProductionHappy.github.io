@@ -16,7 +16,7 @@
       color: #0f0; /* Зелёный текст */
       font-family: 'Courier New', monospace;
       height: 100vh;
-      overflow: hidden; /* ← нельзя скроллить */
+      overflow: hidden;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -42,27 +42,44 @@
   <img id="modem" src="pic/modem.gif" alt="Modem">
   <div id="status">Подключение...</div>
 
+  <!-- Аудио -->
+  <audio id="dialup-audio" src="audio/052. Dialup.mp3" preload="auto"></audio>
+
   <script>
-    // ——— Анимация точек ———
+    const audio = document.getElementById('dialup-audio');
     const statusEl = document.getElementById('status');
+
+    // ——— Запуск звука ———
+    // Пытаемся запустить звук (браузеры требуют user interaction, но на GitHub Pages иногда проходит)
+    function tryPlayAudio() {
+      audio.volume = 0.7;
+      audio.play().catch(e => {
+        console.log("Звук не проигран (требуется взаимодействие или блокировка):", e);
+      });
+    }
+
+    // Запускаем сразу (если браузер разрешит)
+    tryPlayAudio();
+
+    // ——— Анимация точек ———
     let dots = 0;
     const dotInterval = setInterval(() => {
       dots = (dots + 1) % 3;
-      const dotStr = '.'.repeat(dots + 1);
-      statusEl.textContent = `Подключение${dotStr}`;
+      statusEl.textContent = `Подключение${'.'.repeat(dots + 1)}`;
     }, 1000);
 
-    // ——— Защита от кнопки "Назад" ———
+    // ——— Защита от "Назад" ———
     history.pushState(null, null, location.href);
-    window.addEventListener('popstate', function () {
+    window.addEventListener('popstate', () => {
       history.pushState(null, null, location.href);
     });
 
-    // ——— Автопереход через 20 секунд ———
+    // ——— Автопереход через 20 сек ———
     setTimeout(() => {
       clearInterval(dotInterval);
+      audio.pause(); // Останавливаем звук
       window.location.href = 'happy4.html';
-    }, 20000); // 20 секунд
+    }, 20000);
   </script>
 
 </body>
