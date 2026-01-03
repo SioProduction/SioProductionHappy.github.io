@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Подключение</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    body {
+      background: black;
+      color: #0f0; /* Зелёный текст */
+      font-family: 'Courier New', monospace;
+      height: 100vh;
+      overflow: hidden; /* ← нельзя скроллить */
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #modem {
+      width: 500px;
+      height: 500px;
+      image-rendering: pixelated;
+      margin-bottom: 40px;
+    }
+
+    #status {
+      font-size: 20px;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <img id="modem" src="pic/modem.gif" alt="Modem">
+  <div id="status">Подключение...</div>
+
+  <script>
+    // ——— Анимация точек ———
+    const statusEl = document.getElementById('status');
+    let dots = 0;
+    const dotInterval = setInterval(() => {
+      dots = (dots + 1) % 3;
+      const dotStr = '.'.repeat(dots + 1);
+      statusEl.textContent = `Подключение${dotStr}`;
+    }, 1000);
+
+    // ——— Защита от кнопки "Назад" ———
+    history.pushState(null, null, location.href);
+    window.addEventListener('popstate', function () {
+      history.pushState(null, null, location.href);
+    });
+
+    // ——— Автопереход через 20 секунд ———
+    setTimeout(() => {
+      clearInterval(dotInterval);
+      window.location.href = 'happy4.html';
+    }, 20000); // 20 секунд
+  </script>
+
+</body>
+</html>
