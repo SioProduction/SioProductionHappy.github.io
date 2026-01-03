@@ -1,1 +1,473 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>happy2</title>
+  <link rel="icon" href="pic/friend.jpg" type="image/jpeg">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    body {
+      background-color: black;
+      background-image: url('pic/pfon.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      font-family: 'Courier New', monospace;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Таймер */
+    #timer-block {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: black;
+      border: 3px solid black;
+      padding: 6px 10px;
+      color: white;
+      font-size: 14px;
+      line-height: 1.3;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #clock-icon {
+      width: 34px;
+      height: 41px;
+      image-rendering: pixelated;
+    }
+
+    /* Кнопка подключения */
+    #connect-btn {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #d0e4f7;
+      border: 2px solid #1e5cb0;
+      padding: 6px 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      z-index: 110;
+    }
+
+    body.horror-mode #connect-btn {
+      background: black;
+      border-color: red;
+      color: red;
+    }
+
+    /* Основной блок */
+    #main-block {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(90%, 700px);
+      background: #d0e4f7;
+      border: 4px solid #1e5cb0;
+      padding: 16px;
+      z-index: 10;
+    }
+
+    .section {
+      margin-bottom: 16px;
+    }
+
+    .section:last-child { margin-bottom: 0; }
+
+    .section h2 {
+      margin-bottom: 8px;
+      color: #000;
+      font-size: 18px;
+    }
+
+    .section-content {
+      font-size: 14px;
+      color: #222;
+      line-height: 1.4;
+      cursor: default;
+    }
+
+    /* === КНОПКА ЧАТА === */
+    #chat-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #aaa;
+      color: black;
+      border: 2px solid #888;
+      padding: 8px 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 200;
+      text-align: center;
+      width: 80px;
+      height: 34px;
+      line-height: 1.2;
+    }
+
+    body.horror-mode #chat-toggle {
+      background: black;
+      border-color: red;
+      color: red;
+      animation: text-shake 0.05s infinite;
+    }
+
+    /* === ОКНО ЧАТА === */
+    #chat-window {
+      position: fixed;
+      bottom: -320px;
+      right: 20px;
+      width: 560px;
+      height: 300px;
+      background: white;
+      border: 2px solid #888; /* ← ПОЛНАЯ ОБВОДКА, включая верх */
+      z-index: 199;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      transition: bottom 0.3s ease;
+    }
+
+    #chat-window.open {
+      bottom: 86px; /* ← достаточно высоко, чтобы не касаться кнопки */
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .avatar-placeholder {
+      width: 60px;
+      height: 60px;
+      background: #eee;
+      border: 1px dashed #999;
+      flex-shrink: 0;
+    }
+
+    .contact-name {
+      font-weight: bold;
+      font-size: 16px;
+      color: #000;
+    }
+
+    .chat-divider {
+      height: 1px;
+      background: #ccc;
+      margin: 0 0 14px 0;
+    }
+
+    .chat-messages {
+      flex: 1;
+      font-size: 14px;
+      color: #222;
+      cursor: default;
+    }
+
+    /* === Horror-mode стили === */
+    body.horror-mode #main-block {
+      background: black !important;
+      border-color: red !important;
+    }
+
+    body.horror-mode .section h2,
+    body.horror-mode .section-content {
+      color: red !important;
+      animation: text-shake 0.05s infinite;
+    }
+
+    body.horror-mode #chat-window {
+      background: black !important;
+      border-color: red !important;
+    }
+
+    body.horror-mode .contact-name,
+    body.horror-mode .chat-messages {
+      color: red !important;
+      animation: text-shake 0.05s infinite;
+    }
+
+    body.horror-mode #timer-block {
+      background: black !important;
+      color: red !important;
+      border-color: red !important;
+    }
+
+    @keyframes text-shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-1px); }
+      75% { transform: translateX(1px); }
+    }
+
+    body.horror-mode {
+      animation: background-sway 8s infinite alternate ease-in-out;
+    }
+
+    @keyframes background-sway {
+      0% { background-position-x: -8px; }
+      100% { background-position-x: 8px; }
+    }
+
+    /* Затемнение */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      opacity: 0.8;
+      z-index: 9999;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      display: none;
+    }
+
+    /* Глитч-изображения */
+    .glitch-img {
+      position: fixed;
+      z-index: 99999;
+      pointer-events: none;
+      opacity: 0;
+      animation: glitch-fade-in 0.1s forwards, glitch-shake-hard 0.6s;
+    }
+
+    @keyframes glitch-fade-in {
+      to { opacity: 1; }
+    }
+
+    @keyframes glitch-shake-hard {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-12px) rotate(-6deg); }
+      40% { transform: translateX(12px) rotate(6deg); }
+      60% { transform: translateX(-10px) rotate(-4deg); }
+      80% { transform: translateX(10px) rotate(4deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Таймер -->
+  <div id="timer-block">
+    <div id="timer-text">
+      <span id="date">2008-12-31</span><br>
+      <span id="time">00:00:00</span>
+    </div>
+    <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
+  </div>
+
+  <!-- Кнопка подключения -->
+  <div id="connect-btn">Подключиться к сети</div>
+
+  <!-- Основной блок -->
+  <div id="main-block">
+    <div class="section">
+      <h2>FastForum</h2>
+      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как читать">Вы не подключены к сети!</div>
+    </div>
+    <div class="section">
+      <h2>Музыка дня</h2>
+      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как слушать">Вы не подключены к сети!</div>
+    </div>
+    <div class="section">
+      <h2>Новости дня</h2>
+      <div class="section-content" data-default="Вы не подключены к сети!" data-hover="Подключитесь к сети перед тем как читать">Вы не подключены к сети!</div>
+    </div>
+  </div>
+
+  <!-- Чат: кнопка и окно -->
+  <div id="chat-toggle">▼ CHAT</div>
+  <div id="chat-window">
+    <div class="chat-header">
+      <div class="avatar-placeholder"></div>
+      <div class="contact-name">???</div>
+    </div>
+    <div class="chat-divider"></div>
+    <div class="chat-messages" id="chat-messages">Нет подключения к интернету</div>
+  </div>
+
+  <!-- Затемнение -->
+  <div id="overlay"></div>
+
+  <!-- Аудио -->
+  <audio id="horror-audio" src="audio/wowowow.mp3" loop></audio>
+
+  <script>
+    // ——— ВРЕМЯ ———
+    function mirrorDate(realDate) {
+      const year = 2008;
+      const mirroredMonth = 12 - realDate.getMonth();
+      const day = realDate.getDate();
+      const hour = (realDate.getHours() + 12) % 24;
+      const minute = realDate.getMinutes();
+      const second = realDate.getSeconds();
+      const pad = n => String(n).padStart(2, '0');
+      return {
+        date: `2008-${pad(mirroredMonth)}-${pad(day)}`,
+        time: `${pad(hour)}:${pad(minute)}:${pad(second)}`
+      };
+    }
+
+    function updateTimer() {
+      const now = new Date();
+      const mirrored = mirrorDate(now);
+      document.getElementById('date').textContent = mirrored.date;
+      document.getElementById('time').textContent = mirrored.time;
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+
+    // ——— Hover для блоков ———
+    document.querySelectorAll('.section-content').forEach(el => {
+      const def = el.dataset.default;
+      const hover = el.dataset.hover;
+      el.addEventListener('mouseenter', () => el.textContent = hover);
+      el.addEventListener('mouseleave', () => el.textContent = def);
+    });
+
+    // ——— Кнопка "Подключиться к сети" ———
+    const connectBtn = document.getElementById('connect-btn');
+    connectBtn.addEventListener('click', () => {
+      if (document.body.classList.contains('horror-mode')) {
+        window.location.href = 'sad1.html';
+      } else {
+        window.location.href = 'happy3.html';
+      }
+    });
+
+    // ——— Чат ———
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatWindow = document.getElementById('chat-window');
+    const chatMessages = document.getElementById('chat-messages');
+
+    let isChatOpen = false;
+
+    const defaultText = "Нет подключения к интернету";
+    const hoverText = "Подключитесь, чтобы общаться с другими";
+
+    chatMessages.textContent = defaultText;
+
+    chatMessages.addEventListener('mouseenter', () => {
+      chatMessages.textContent = hoverText;
+    });
+
+    chatMessages.addEventListener('mouseleave', () => {
+      chatMessages.textContent = defaultText;
+    });
+
+    chatToggle.addEventListener('click', () => {
+      if (isChatOpen) {
+        chatWindow.classList.remove('open');
+        chatToggle.textContent = document.body.classList.contains('horror-mode') ? '▼ チャット' : '▼ CHAT';
+      } else {
+        chatWindow.classList.add('open');
+        chatToggle.textContent = document.body.classList.contains('horror-mode') ? '▲ チャット' : '▲ CHAT';
+      }
+      isChatOpen = !isChatOpen;
+    });
+
+    // ——— Konami Code ———
+    let konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+    let konamiIndex = 0;
+
+    document.addEventListener('keydown', function (e) {
+      if (e.keyCode === konamiCode[konamiIndex]) {
+        konamiIndex++;
+        if (konamiIndex === konamiCode.length) {
+          // Фон
+          document.body.style.backgroundImage = "url('pic/1222.jpg')";
+
+          // Активация злого режима
+          document.body.classList.add('horror-mode');
+
+          // Затемнение
+          const overlay = document.getElementById('overlay');
+          overlay.style.display = 'block';
+          overlay.style.opacity = '0.8';
+          setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 300);
+          }, 3000);
+
+          // Аудио
+          const audio = document.getElementById('horror-audio');
+          audio.play().catch(e => console.log("Audio play failed:", e));
+
+          // Разблокировка скролла
+          document.body.style.overflow = 'auto';
+
+          // Глитч-изображения
+          setInterval(() => {
+            const images = ['pic/hahah2.jpg', 'pic/haha1.png', 'pic/hahaha3.png'];
+            const img = document.createElement('img');
+            img.src = images[Math.floor(Math.random() * images.length)];
+            img.className = 'glitch-img';
+            img.style.width = (Math.random() * 150 + 100) + 'px';
+            img.style.top = Math.random() * (window.innerHeight - 200) + 'px';
+            img.style.left = Math.random() * (window.innerWidth - 200) + 'px';
+            document.body.appendChild(img);
+            setTimeout(() => img.remove(), 1000);
+          }, 10000);
+
+          // Перевод текстов
+          connectBtn.textContent = 'ネットに接続';
+
+          document.querySelector('.section:nth-of-type(1) h2').textContent = 'ファストフォーラム';
+          document.querySelector('.section:nth-of-type(2) h2').textContent = '今日の音楽';
+          document.querySelector('.section:nth-of-type(3) h2').textContent = '今日のニュース';
+
+          document.querySelectorAll('.section-content').forEach(el => {
+            el.dataset.default_jp = 'ネットに接続されていません！';
+            el.dataset.hover_jp = el.dataset.hover.includes('читать') ? '読む前にネットに接続してください' : '聴く前にネットに接続してください';
+            el.textContent = el.dataset.default_jp;
+            el.onmouseenter = () => el.textContent = el.dataset.hover_jp;
+            el.onmouseleave = () => el.textContent = el.dataset.default_jp;
+          });
+
+          // Обновление чата
+          document.querySelector('.contact-name').textContent = '???';
+          chatMessages.dataset.default_jp = 'インターネットに接続されていません';
+          chatMessages.dataset.hover_jp = '他の人と話すには接続してください';
+          chatMessages.textContent = chatMessages.dataset.default_jp;
+
+          chatMessages.onmouseenter = () => chatMessages.textContent = chatMessages.dataset.hover_jp;
+          chatMessages.onmouseleave = () => chatMessages.textContent = chatMessages.dataset.default_jp;
+
+          // Кнопка чата
+          if (!isChatOpen) {
+            chatToggle.textContent = '▼ チャット';
+          } else {
+            chatToggle.textContent = '▲ チャット';
+          }
+
+          konamiIndex = 0;
+        }
+      } else {
+        konamiIndex = 0;
+      }
+    });
+  </script>
+
+</body>
+</html>
