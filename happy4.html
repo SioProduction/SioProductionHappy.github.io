@@ -85,7 +85,7 @@
       cursor: pointer;
     }
 
-    /* Музыка дня: иконка + ползунок с % */
+    /* Музыка */
     .music-controls {
       display: flex;
       align-items: center;
@@ -93,11 +93,12 @@
     }
 
     #music-icon {
-      width: 24px;
-      height: 24px;
+      width: 48px;
+      height: 48px;
       cursor: pointer;
-      border: 1px solid #888;
+      border: 2px solid #888;
       background: white;
+      image-rendering: pixelated;
     }
 
     .volume-wrapper {
@@ -116,7 +117,7 @@
       color: #222;
     }
 
-    /* === КНОПКА ЧАТА === */
+    /* Чат */
     #chat-toggle {
       position: fixed;
       bottom: 20px;
@@ -136,7 +137,6 @@
       line-height: 1.2;
     }
 
-    /* === ОКНО ЧАТА === */
     #chat-window {
       position: fixed;
       bottom: -320px;
@@ -166,12 +166,10 @@
     .avatar-placeholder {
       width: 60px;
       height: 60px;
-      background: #eee;
-      border: 1px dashed #999;
-      flex-shrink: 0;
       background-image: url('pic/friend.jpg');
       background-size: cover;
       background-position: center;
+      border: 1px solid #999;
     }
 
     .contact-name {
@@ -186,8 +184,16 @@
       margin: 0 0 14px 0;
     }
 
+    .chat-messages {
+      flex: 1;
+      font-size: 13px;
+      color: #222;
+      overflow-y: auto;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
     .chat-input {
-      margin-top: 8px;
       padding: 4px;
       font-family: 'Courier New', monospace;
       font-size: 13px;
@@ -195,10 +201,22 @@
       border: 1px solid #999;
     }
 
+    /* Новости — старый стиль */
     .old-news {
       font-family: 'Courier New', monospace;
       color: #222;
       font-size: 14px;
+      white-space: pre-wrap;
+    }
+
+    /* Конфетти */
+    .confetti {
+      position: absolute;
+      top: -10px;
+      width: 8px;
+      height: 8px;
+      opacity: 0.7;
+      z-index: 50;
     }
   </style>
 </head>
@@ -245,6 +263,7 @@
       <div class="contact-name">Cool_Cobalt28</div>
     </div>
     <div class="chat-divider"></div>
+    <div class="chat-messages" id="chat-messages"></div>
     <input type="text" class="chat-input" id="chat-input" placeholder="Напишите сообщение...">
   </div>
 
@@ -281,7 +300,8 @@
     const tracks = [
       'audio/Postal 2 OST - Map.mp3',
       'audio/Team Fortress 2 Soundtrack ｜ Upgrade Station.mp3',
-      'audio/15. Still Alive (Radio Mix Clean).mp3'
+      'audio/15. Still Alive (Radio Mix Clean).mp3',
+      'audio/X.mp3.mp3'
     ];
 
     const musicIcon = document.getElementById('music-icon');
@@ -289,10 +309,62 @@
     const volumePercent = document.getElementById('volume-percent');
     const musicPlayer = document.getElementById('music-player');
 
+    let isPlaying = false;
+    let confettiInterval = null;
+
     volumeCtrl.addEventListener('input', () => {
       const vol = parseFloat(volumeCtrl.value);
       musicPlayer.volume = vol;
       volumePercent.textContent = Math.round(vol * 100) + '%';
+    });
+
+    function startConfetti() {
+      if (confettiInterval) return;
+      confettiInterval = setInterval(() => {
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * window.innerWidth + 'px';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.opacity = (0.4 + Math.random() * 0.4).toFixed(2);
+        document.body.appendChild(confetti);
+
+        // Падение
+        let pos = -10;
+        const fall = setInterval(() => {
+          pos += 2;
+          confetti.style.top = pos + 'px';
+          if (pos > window.innerHeight) {
+            clearInterval(fall);
+            confetti.remove();
+          }
+        }, 30);
+
+      }, 200);
+    }
+
+    function stopConfetti() {
+      if (confettiInterval) {
+        clearInterval(confettiInterval);
+        confettiInterval = null;
+      }
+      // Убрать остатки
+      document.querySelectorAll('.confetti').forEach(el => el.remove());
+    }
+
+    musicPlayer.addEventListener('play', () => {
+      isPlaying = true;
+      startConfetti();
+    });
+
+    musicPlayer.addEventListener('pause', () => {
+      isPlaying = false;
+      stopConfetti();
+    });
+
+    musicPlayer.addEventListener('ended', () => {
+      isPlaying = false;
+      stopConfetti();
     });
 
     musicIcon.addEventListener('click', () => {
@@ -301,14 +373,21 @@
       musicPlayer.play().catch(e => console.warn("Playback failed:", e));
     });
 
-    // ——— Новости дня в стиле 2000-х ———
+    // ——— Новости дня ———
+    const getMirrorDateDM = () => {
+      const now = new Date();
+      const day = now.getDate();
+      const month = 12 - now.getMonth(); // зеркальный месяц
+      return `${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')}`;
+    };
+
     const newsItems = [
-      "23:45 [HMM] HyperMindMachine открыл способ блокировать вирус XZ-9! :P",
-      "ВНИМАНИЕ! HMM успешно синтезировал нейро-мутаген для лечения синдрома Чёрного Пульса!",
-      "02:11 — HMM сообщает: лекарство от болезни Крейна готово. Скачать пока нельзя, но скоро! :D",
-      "URGENT: HyperMindMachine утверждает, что 'Сонная чума' вылечена! Подробности на форуме.",
-      "Новость дня: HMM взломал код сна и вылечил бессонницу у 3 добровольцев. Они теперь не спят. ВООБЩЕ. :O",
-      "11:33 — HyperMindMachine: 'Мы победили вирус Delta-7. Спасибо, что верили в нас!'"
+      `${getMirrorDateDM()} — HMM ОБЪЯВЛЯЕТ: найдено полное лекарство от всех форм рака! Уже тестируется в 12 странах! :P`,
+      `${getMirrorDateDM()} — СРОЧНО! HyperMindMachine восстановил 87% повреждённых гидроэлектростанций в Азии. Электричество ВЕРНУЛОСЬ!`,
+      `${getMirrorDateDM()} — HMM предотвратил глобальный кризис воды! Новые фильтры очищают океаны за час. Ура! :D`,
+      `${getMirrorDateDM()} — ВНИМАНИЕ: ИИ HMM дешифровал солнечные вспышки и спас спутники! NASA благодарит!`,
+      `${getMirrorDateDM()} — HyperMindMachine научил старые компьютеры играть в DOOM. Мир изменился. Навсегда. :O`,
+      `${getMirrorDateDM()} — HMM устранил 99.8% багов в Windows XP. Билл Гейтс в шоке.`
     ];
 
     document.getElementById('random-news').textContent = newsItems[Math.floor(Math.random() * newsItems.length)];
@@ -316,6 +395,8 @@
     // ——— Чат ———
     const chatToggle = document.getElementById('chat-toggle');
     const chatWindow = document.getElementById('chat-window');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
     let isChatOpen = false;
 
     chatToggle.addEventListener('click', () => {
@@ -324,11 +405,34 @@
       isChatOpen = !isChatOpen;
     });
 
-    // Простая отправка (можно расширить)
-    document.getElementById('chat-input').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        alert("Сообщение отправлено! (это демо)");
-        e.target.value = '';
+    // Отправка сообщений
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && chatInput.value.trim()) {
+        const msg = chatInput.value.trim();
+        const div = document.createElement('div');
+        div.innerHTML = `<b>cookieXD43:</b> ${msg}`;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        chatInput.value = '';
+
+        // === ЗАГОТОВКА ПОД "ВЫБОР БЕЗ ВЫБОРА" ===
+        // Раскомментируй, когда будешь делать автозамену
+        /*
+        let target = "привет";
+        let input = "";
+        chatInput.addEventListener('input', () => {
+          const val = chatInput.value;
+          if (val.length > input.length) {
+            // Простая подмена: а→п, б→р и т.д.
+            const map = { 'а': 'п', 'б': 'р', 'в': 'и', 'г': 'в', 'д': 'е', 'е': 'т' };
+            const lastChar = val.slice(-1).toLowerCase();
+            if (map[lastChar]) {
+              chatInput.value = val.slice(0, -1) + map[lastChar];
+            }
+          }
+          input = chatInput.value;
+        });
+        */
       }
     });
   </script>
