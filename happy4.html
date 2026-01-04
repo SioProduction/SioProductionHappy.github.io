@@ -31,7 +31,7 @@
       top: 20px;
       left: 20px;
       background: black;
-      border: 3px solid black;
+      border: 3px solid #00008b;
       padding: 6px 10px;
       color: white;
       font-size: 14px;
@@ -46,23 +46,6 @@
       width: 34px;
       height: 41px;
       image-rendering: pixelated;
-    }
-
-    /* Кнопка подключения */
-    #connect-btn {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #d0e4f7;
-      border: 2px solid #1e5cb0;
-      padding: 6px 16px;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      font-weight: bold;
-      color: #000;
-      cursor: pointer;
-      z-index: 110;
     }
 
     /* Основной блок */
@@ -102,26 +85,35 @@
       cursor: pointer;
     }
 
-    /* Музыка дня: кнопка и громкость */
+    /* Музыка дня: иконка + ползунок с % */
     .music-controls {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .music-btn {
-      background: #1e5cb0;
-      color: white;
-      border: none;
-      padding: 4px 10px;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
+    #music-icon {
+      width: 24px;
+      height: 24px;
       cursor: pointer;
+      border: 1px solid #888;
+      background: white;
     }
 
-    .music-volume {
+    .volume-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .volume-slider {
       width: 80px;
       height: 18px;
+    }
+
+    .volume-percent {
+      font-size: 12px;
+      color: #222;
     }
 
     /* === КНОПКА ЧАТА === */
@@ -177,6 +169,9 @@
       background: #eee;
       border: 1px dashed #999;
       flex-shrink: 0;
+      background-image: url('pic/friend.jpg');
+      background-size: cover;
+      background-position: center;
     }
 
     .contact-name {
@@ -191,19 +186,20 @@
       margin: 0 0 14px 0;
     }
 
-    .chat-messages {
-      flex: 1;
-      font-size: 14px;
+    .chat-input {
+      margin-top: 8px;
+      padding: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      width: 100%;
+      border: 1px solid #999;
+    }
+
+    .old-news {
+      font-family: 'Courier New', monospace;
       color: #222;
-      cursor: default;
+      font-size: 14px;
     }
-
-    /* === Чат без подключения === */
-    #chat-messages {
-      font-style: italic;
-    }
-
-    /* Затемнение и прочие эффекты НЕ ВКЛЮЧЕНЫ — horror-режим удалён */
   </style>
 </head>
 <body>
@@ -217,9 +213,6 @@
     <img id="clock-icon" src="pic/Clock.webp" alt="Clock">
   </div>
 
-  <!-- Кнопка подключения -->
-  <div id="connect-btn">Подключиться к сети</div>
-
   <!-- Основной блок -->
   <div id="main-block">
     <div class="section">
@@ -231,28 +224,31 @@
     <div class="section">
       <h2>Музыка дня</h2>
       <div class="section-content music-controls">
-        <button class="music-btn" id="play-music">Слушать</button>
-        <input type="range" min="0" max="1" step="0.01" value="0.7" class="music-volume" id="volume-control">
+        <img id="music-icon" src="pic/musicplayer.jpg" alt="Play">
+        <div class="volume-wrapper">
+          <input type="range" min="0" max="1" step="0.01" value="0.7" class="volume-slider" id="volume-control">
+          <span class="volume-percent" id="volume-percent">70%</span>
+        </div>
       </div>
     </div>
     <div class="section">
       <h2>Новости дня</h2>
-      <div class="section-content" id="random-news">—</div>
+      <div class="section-content old-news" id="random-news">Загрузка...</div>
     </div>
   </div>
 
-  <!-- Чат: кнопка и окно -->
+  <!-- Чат -->
   <div id="chat-toggle">▼ CHAT</div>
   <div id="chat-window">
     <div class="chat-header">
       <div class="avatar-placeholder"></div>
-      <div class="contact-name">???</div>
+      <div class="contact-name">Cool_Cobalt28</div>
     </div>
     <div class="chat-divider"></div>
-    <div class="chat-messages" id="chat-messages">Нет подключения к интернету</div>
+    <input type="text" class="chat-input" id="chat-input" placeholder="Напишите сообщение...">
   </div>
 
-  <!-- Аудио (динамически создаётся при нажатии) -->
+  <!-- Аудио -->
   <audio id="music-player"></audio>
 
   <script>
@@ -281,54 +277,59 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    // ——— Кнопка подключения ———
-    const connectBtn = document.getElementById('connect-btn');
-    connectBtn.addEventListener('click', () => {
-      window.location.href = 'happy3.html';
-    });
-
-    // ——— Музыка дня ———
+    // ——— Музыка ———
     const tracks = [
       'audio/Postal 2 OST - Map.mp3',
       'audio/Team Fortress 2 Soundtrack ｜ Upgrade Station.mp3',
       'audio/15. Still Alive (Radio Mix Clean).mp3'
     ];
 
-    const musicBtn = document.getElementById('play-music');
+    const musicIcon = document.getElementById('music-icon');
     const volumeCtrl = document.getElementById('volume-control');
+    const volumePercent = document.getElementById('volume-percent');
     const musicPlayer = document.getElementById('music-player');
 
     volumeCtrl.addEventListener('input', () => {
-      musicPlayer.volume = volumeCtrl.value;
+      const vol = parseFloat(volumeCtrl.value);
+      musicPlayer.volume = vol;
+      volumePercent.textContent = Math.round(vol * 100) + '%';
     });
 
-    musicBtn.addEventListener('click', () => {
+    musicIcon.addEventListener('click', () => {
       const randomTrack = tracks[Math.floor(Math.random() * tracks.length)];
       musicPlayer.src = randomTrack;
       musicPlayer.play().catch(e => console.warn("Playback failed:", e));
     });
 
-    // ——— Новости дня: случайный прочерк ———
-    const dashes = ['—', '–', '— —', '•••', '...', '—'];
-    document.getElementById('random-news').textContent = dashes[Math.floor(Math.random() * dashes.length)];
+    // ——— Новости дня в стиле 2000-х ———
+    const newsItems = [
+      "23:45 [HMM] HyperMindMachine открыл способ блокировать вирус XZ-9! :P",
+      "ВНИМАНИЕ! HMM успешно синтезировал нейро-мутаген для лечения синдрома Чёрного Пульса!",
+      "02:11 — HMM сообщает: лекарство от болезни Крейна готово. Скачать пока нельзя, но скоро! :D",
+      "URGENT: HyperMindMachine утверждает, что 'Сонная чума' вылечена! Подробности на форуме.",
+      "Новость дня: HMM взломал код сна и вылечил бессонницу у 3 добровольцев. Они теперь не спят. ВООБЩЕ. :O",
+      "11:33 — HyperMindMachine: 'Мы победили вирус Delta-7. Спасибо, что верили в нас!'"
+    ];
+
+    document.getElementById('random-news').textContent = newsItems[Math.floor(Math.random() * newsItems.length)];
 
     // ——— Чат ———
     const chatToggle = document.getElementById('chat-toggle');
     const chatWindow = document.getElementById('chat-window');
-    const chatMessages = document.getElementById('chat-messages');
-
     let isChatOpen = false;
-    const defaultText = "Нет подключения к интернету";
-    const hoverText = "Подключитесь, чтобы общаться с другими";
-
-    chatMessages.textContent = defaultText;
-    chatMessages.addEventListener('mouseenter', () => chatMessages.textContent = hoverText);
-    chatMessages.addEventListener('mouseleave', () => chatMessages.textContent = defaultText);
 
     chatToggle.addEventListener('click', () => {
       chatWindow.classList.toggle('open');
       chatToggle.textContent = isChatOpen ? '▼ CHAT' : '▲ CHAT';
       isChatOpen = !isChatOpen;
+    });
+
+    // Простая отправка (можно расширить)
+    document.getElementById('chat-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        alert("Сообщение отправлено! (это демо)");
+        e.target.value = '';
+      }
     });
   </script>
 
