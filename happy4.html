@@ -91,17 +91,21 @@
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+
+    #music-container {
       position: relative;
+      width: 48px;
+      height: 48px;
     }
 
     #music-icon {
-      width: 48px;
-      height: 48px;
+      width: 100%;
+      height: 100%;
       cursor: pointer;
       border: 2px solid #888;
       background: white;
       image-rendering: pixelated;
-      position: relative;
     }
 
     #stop-overlay {
@@ -110,7 +114,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.4);
       color: red;
       font-weight: bold;
       font-size: 24px;
@@ -204,7 +208,7 @@
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      background: #888; /* серый = оффлайн */
+      background: #888;
     }
 
     .chat-divider {
@@ -269,7 +273,7 @@
     <div class="section">
       <h2>Музыка дня</h2>
       <div class="section-content music-controls">
-        <div style="position: relative;">
+        <div id="music-container">
           <img id="music-icon" src="pic/musicplayer.jpg" alt="Play">
           <div id="stop-overlay">✕</div>
         </div>
@@ -344,7 +348,6 @@
     const volumePercent = document.getElementById('volume-percent');
     const musicPlayer = document.getElementById('music-player');
     let isPlaying = false;
-    let currentTrack = '';
     let confettiInterval = null;
 
     volumeCtrl.addEventListener('input', () => {
@@ -390,20 +393,25 @@
         isPlaying = false;
         stopConfetti();
       } else {
-        if (musicPlayer.src !== currentTrack) {
-          currentTrack = tracks[Math.floor(Math.random() * tracks.length)];
-          musicPlayer.src = currentTrack;
+        // Выбираем трек ТОЛЬКО при первом запуске или после смены
+        if (!musicPlayer.src || musicPlayer.src === location.href) {
+          const randomTrack = tracks[Math.floor(Math.random() * tracks.length)];
+          musicPlayer.src = randomTrack;
         }
         musicPlayer.play().catch(e => console.warn("Playback failed:", e));
         isPlaying = true;
       }
     });
 
-    musicPlayer.addEventListener('play', () => {
-      isPlaying = true;
-      startConfetti();
+    // Hover для креста
+    musicIcon.addEventListener('mouseenter', () => {
+      if (isPlaying) stopOverlay.style.display = 'flex';
+    });
+    musicIcon.addEventListener('mouseleave', () => {
+      stopOverlay.style.display = 'none';
     });
 
+    // Остановка по событию
     musicPlayer.addEventListener('pause', () => {
       isPlaying = false;
       stopConfetti();
@@ -414,15 +422,7 @@
       stopConfetti();
     });
 
-    // Hover: показ креста
-    musicIcon.addEventListener('mouseenter', () => {
-      if (isPlaying) stopOverlay.style.display = 'flex';
-    });
-    musicIcon.addEventListener('mouseleave', () => {
-      stopOverlay.style.display = 'none';
-    });
-
-    // ——— НОВОСТИ ДНЯ ———
+    // ——— НОВОСТИ ———
     const getMirrorDateDM = () => {
       const now = new Date();
       const day = now.getDate();
@@ -450,7 +450,6 @@
       newsEl.innerHTML = '👁 👁';
       eyesActive = true;
 
-      // Возврат при наведении
       const onMouseEnter = () => {
         newsEl.textContent = original;
         eyesActive = false;
@@ -459,7 +458,6 @@
       };
       newsEl.addEventListener('mouseenter', onMouseEnter);
 
-      // Смена фона через 5 сек, если не трогать
       eyesTimeout = setTimeout(() => {
         if (eyesActive) {
           document.body.style.backgroundImage = "url('pic/Oblivion.webp')";
@@ -469,8 +467,7 @@
 
     function generateNews() {
       const newsEl = document.getElementById('random-news');
-      const shouldShowEyes = Math.random() < 0.07; // 7%
-      if (shouldShowEyes) {
+      if (Math.random() < 0.07) {
         showEyes();
       } else {
         newsEl.textContent = normalNews[Math.floor(Math.random() * normalNews.length)];
@@ -478,7 +475,7 @@
       }
     }
 
-    // ——— KONAMI CODE ДЛЯ ГЛАЗ ———
+    // Konami
     const konami = [38,38,40,40,37,39,37,39,66,65];
     let kIndex = 0;
     document.addEventListener('keydown', (e) => {
@@ -497,7 +494,6 @@
 
     // ——— ЧАТ ———
     const chatToggle = document.getElementById('chat-toggle');
-    const chatWindow = document.getElementById('chat-window');
     const chatMessages = document.getElementById('chat-messages');
     const chatInput = document.getElementById('chat-input');
     const statusDot = document.getElementById('status-dot');
@@ -505,6 +501,7 @@
     let onlineTimeout = null;
 
     chatToggle.addEventListener('click', () => {
+      const chatWindow = document.getElementById('chat-window');
       chatWindow.classList.toggle('open');
       chatToggle.textContent = isChatOpen ? '▼ CHAT' : '▲ CHAT';
       isChatOpen = !isChatOpen;
@@ -512,7 +509,7 @@
 
     chatInput.addEventListener('input', () => {
       if (statusDot.style.background !== 'green') {
-        statusDot.style.background = '#888'; // back to grey
+        statusDot.style.background = '#888';
         clearTimeout(onlineTimeout);
         onlineTimeout = setTimeout(() => {
           statusDot.style.background = 'green';
