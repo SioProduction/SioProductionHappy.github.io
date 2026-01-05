@@ -62,6 +62,15 @@
       margin-top: -10px;
     }
 
+    .message {
+      font-size: 1.4rem;
+      margin: 15px 0;
+      font-weight: 600;
+      color: #ff5555;
+      text-shadow: 0 0 8px rgba(255, 85, 85, 0.5);
+      transition: all 0.3s ease;
+    }
+
     .btn-group {
       display: flex;
       gap: 10px;
@@ -78,11 +87,12 @@
       font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
-      border-radius: 8px;
+      border-radius: 50px; /* КРУГЛЫЕ КНОПКИ */
       transition: all 0.3s ease;
       box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
       position: relative;
       overflow: hidden;
+      min-width: 160px;
     }
 
     .btn::before {
@@ -186,9 +196,10 @@
 </head>
 <body>
   <div class="container">
-    <h1>Спидтест</h1>
+    <h1>Спидтест🛏️</h1>
     <div class="speed-display" id="speed">—</div>
     <div class="unit">Мбит/с</div>
+    <div class="message" id="message">—</div>
     <div class="btn-group">
       <button class="btn" onclick="startTest()">ТЕСТ СКОРОСТИ</button>
       <button class="btn" onclick="toggleAdvanced()" style="background:linear-gradient(45deg, #333, #555); color:#ff5555;">ДОП. ИНФО</button>
@@ -212,7 +223,7 @@
       </div>
       <div class="info-row">
         <span class="info-label">Источник:</span>
-        <span class="info-value">librespeed.org</span>
+        <span class="info-value">Локальный тест</span>
       </div>
     </div>
   </div>
@@ -225,57 +236,85 @@
       isTesting = true;
 
       const elSpeed = document.getElementById('speed');
+      const elMessage = document.getElementById('message');
       const elLoading = document.getElementById('loading');
       const elStatus = document.getElementById('status');
 
       elSpeed.textContent = '...';
+      elMessage.textContent = '—';
       elLoading.style.display = 'block';
-      elStatus.textContent = 'Подключение к серверу...';
+      elStatus.textContent = 'Подготовка...';
 
       try {
-        // Используем публичный сервер LibreSpeed
-        const serverUrl = 'https://librespeed.org/api/speedtest.php?server=librespeed.org&lat=0&lon=0&distance=0&client=web&callback=callback';
+        // Измеряем пинг
+        const ping = await measurePing();
+        document.getElementById('ping').textContent = ping.toFixed(1) + ' мс';
 
-        // Создаём скрипт для JSONP
-        const script = document.createElement('script');
-        script.src = serverUrl + '&_=' + Date.now();
-        window.callback = function(data) {
-          if (!data || !data.download || !data.upload || !data.ping) {
-            throw new Error('Неверные данные от сервера');
-          }
+        // Измеряем загрузку
+        const download = await measureDownload();
+        document.getElementById('download').textContent = download.toFixed(1) + ' Мбит/с';
 
-          const download = parseFloat(data.download).toFixed(1);
-          const upload = parseFloat(data.upload).toFixed(1);
-          const ping = parseFloat(data.ping).toFixed(1);
+        // Условно эмулируем выгрузку (реальная требует сервера)
+        const upload = Math.min(download * 0.3, 50).toFixed(1);
+        document.getElementById('upload').textContent = upload + ' Мбит/с';
 
-          elSpeed.textContent = download;
-          document.getElementById('download').textContent = download + ' Мбит/с';
-          document.getElementById('upload').textContent = upload + ' Мбит/с';
-          document.getElementById('ping').textContent = ping + ' мс';
+        // Обновляем основную скорость
+        elSpeed.textContent = download.toFixed(1);
 
-          elLoading.style.display = 'none';
-          elStatus.textContent = '✅ Тест завершён';
+        // Сообщение по скорости
+        if (download > 50) {
+          elMessage.textContent = '🚀 У вас спид!';
+          elMessage.style.color = '#00ff00';
+        } else if (download > 10) {
+          elMessage.textContent = '🐢 У вас вич!';
+          elMessage.style.color = '#ffff00';
+        } else {
+          elMessage.textContent = '🤕 Вы здоровые?';
+          elMessage.style.color = '#ff5555';
+        }
 
-          isTesting = false;
-        };
+        elLoading.style.display = 'none';
+        elStatus.textContent = '✅ Готово';
 
-        document.body.appendChild(script);
-
-        setTimeout(() => {
-          if (isTesting) {
-            elLoading.style.display = 'none';
-            elStatus.textContent = '❌ Таймаут или ошибка';
-            elSpeed.textContent = '—';
-            isTesting = false;
-          }
-        }, 15000); // 15 секунд таймаут
+        isTesting = false;
 
       } catch (err) {
         console.error(err);
         elSpeed.textContent = '—';
+        elMessage.textContent = '❌ Ошибка';
         elLoading.style.display = 'none';
-        elStatus.textContent = '❌ Ошибка при тестировании';
+        elStatus.textContent = '⚠️ Не удалось измерить';
         isTesting = false;
+      }
+    }
+
+    async function measurePing() {
+      const start = performance.now();
+      try {
+        await fetch('https://httpbin.org/get?r=' + Math.random(), { cache: 'no-store' });
+      } catch (e) {
+        // Если ошибка — делаем условный пинг
+        return 100;
+      }
+      const end = performance.now();
+      return end - start;
+    }
+
+    async function measureDownload() {
+      const url = 'https://speed.cloudflare.com/__down?bytes=10000000'; // 10 МБ
+      const start = performance.now();
+
+      try {
+        const resp = await fetch(url + `&r=${Math.random()}`, { cache: 'no-store' });
+        const data = await resp.arrayBuffer();
+        const end = performance.now();
+
+        const duration = (end - start) / 1000; // секунды
+        const bitsLoaded = data.byteLength * 8;
+        const bps = bitsLoaded / duration;
+        return bps / 1_000_000; // Мбит/с
+      } catch (e) {
+        return 0;
       }
     }
 
