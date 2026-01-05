@@ -21,6 +21,8 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
+      background: linear-gradient(135deg, #000, #111);
+      overflow-x: hidden;
     }
 
     .container {
@@ -31,70 +33,154 @@
 
     h1 {
       color: #ff0000;
-      font-size: 2.5rem;
-      margin-bottom: 30px;
+      font-size: 2.8rem;
+      margin-bottom: 20px;
       font-weight: 700;
+      text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+      letter-spacing: 1px;
     }
 
     .speed-display {
-      font-size: 4rem;
-      font-weight: 800;
+      font-size: 4.5rem;
+      font-weight: 900;
       margin: 20px 0;
       background: linear-gradient(to right, #ff0000, #ff5555);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+      text-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+      transition: transform 0.3s ease;
+    }
+
+    .speed-display:hover {
+      transform: scale(1.05);
     }
 
     .unit {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       opacity: 0.8;
+      margin-top: -10px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .btn {
-      background: #ff0000;
+      background: linear-gradient(45deg, #ff0000, #ff3333);
       color: #000;
       border: none;
-      padding: 12px 30px;
+      padding: 14px 30px;
       font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
-      border-radius: 4px;
-      transition: 0.2s;
-      margin-top: 20px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
     }
 
     .btn:hover {
-      background: #ff3333;
-      transform: scale(1.03);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 15px rgba(255, 0, 0, 0.5);
+      background: linear-gradient(45deg, #ff3333, #ff5555);
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(0.98);
     }
 
     .advanced-info {
       margin-top: 30px;
-      padding: 20px;
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 8px;
+      padding: 25px;
+      background: rgba(20, 20, 20, 0.7);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
       display: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .advanced-info.show {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .advanced-info h2 {
       color: #ff5555;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      text-shadow: 0 0 8px #ff5555;
     }
 
     .info-row {
       display: flex;
       justify-content: space-between;
-      margin: 8px 0;
+      margin: 12px 0;
+      padding: 10px;
+      background: rgba(30, 30, 30, 0.5);
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .info-row:hover {
+      background: rgba(50, 50, 50, 0.5);
     }
 
     .info-label {
-      opacity: 0.7;
+      opacity: 0.8;
+      font-weight: 500;
     }
 
     .info-value {
       font-weight: 600;
+      color: #ff0000;
+    }
+
+    .loading {
+      display: none;
+      font-size: 1.2rem;
+      color: #ff5555;
+      margin-top: 10px;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    .status {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -103,14 +189,18 @@
     <h1>Спидтест</h1>
     <div class="speed-display" id="speed">—</div>
     <div class="unit">Мбит/с</div>
-    <button class="btn" onclick="startTest()">ТЕСТ СКОРОСТИ</button>
-    <button class="btn" onclick="toggleAdvanced()" style="background:#333;color:#ff0000;margin-top:10px;">ДОП. ИНФО</button>
+    <div class="btn-group">
+      <button class="btn" onclick="startTest()">ТЕСТ СКОРОСТИ</button>
+      <button class="btn" onclick="toggleAdvanced()" style="background:linear-gradient(45deg, #333, #555); color:#ff5555;">ДОП. ИНФО</button>
+    </div>
+    <div class="loading" id="loading">Загрузка данных...</div>
+    <div class="status" id="status"></div>
 
     <div class="advanced-info" id="advanced">
       <h2>Расширенная информация</h2>
       <div class="info-row">
         <span class="info-label">Пинг:</span>
-        <span class="info-value" id="ping">—</span>
+        <span class="info-value" id="ping">— мс</span>
       </div>
       <div class="info-row">
         <span class="info-label">Загрузка:</span>
@@ -122,7 +212,7 @@
       </div>
       <div class="info-row">
         <span class="info-label">Источник:</span>
-        <span class="info-value">speed.cloudflare.com</span>
+        <span class="info-value">librespeed.org</span>
       </div>
     </div>
   </div>
@@ -130,61 +220,68 @@
   <script>
     let isTesting = false;
 
-    async function fetchSpeed(url, sizeInBytes) {
-      const start = performance.now();
-      const resp = await fetch(url + `?r=${Math.random()}`, { cache: 'no-store' });
-      const data = await resp.arrayBuffer();
-      const end = performance.now();
-
-      if (data.byteLength !== sizeInBytes) return null;
-
-      const duration = (end - start) / 1000; // секунды
-      const bitsLoaded = sizeInBytes * 8;
-      const bps = bitsLoaded / duration;
-      return (bps / 1_000_000); // Мбит/с
-    }
-
-    async function measurePing() {
-      const start = performance.now();
-      await fetch('https://speed.cloudflare.com/__down?bytes=1', { cache: 'no-store' });
-      return performance.now() - start;
-    }
-
     async function startTest() {
       if (isTesting) return;
       isTesting = true;
 
       const elSpeed = document.getElementById('speed');
+      const elLoading = document.getElementById('loading');
+      const elStatus = document.getElementById('status');
+
       elSpeed.textContent = '...';
+      elLoading.style.display = 'block';
+      elStatus.textContent = 'Подключение к серверу...';
 
-      // Пинг
-      let ping = await measurePing();
-      document.getElementById('ping').textContent = ping.toFixed(1) + ' мс';
-
-      // Загрузка (download)
-      let downSpeed = 0;
       try {
-        // Используем файл 10 МБ
-        downSpeed = await fetchSpeed('https://speed.cloudflare.com/__down', 10_000_000);
-      } catch (e) {
-        downSpeed = 0;
+        // Используем публичный сервер LibreSpeed
+        const serverUrl = 'https://librespeed.org/api/speedtest.php?server=librespeed.org&lat=0&lon=0&distance=0&client=web&callback=callback';
+
+        // Создаём скрипт для JSONP
+        const script = document.createElement('script');
+        script.src = serverUrl + '&_=' + Date.now();
+        window.callback = function(data) {
+          if (!data || !data.download || !data.upload || !data.ping) {
+            throw new Error('Неверные данные от сервера');
+          }
+
+          const download = parseFloat(data.download).toFixed(1);
+          const upload = parseFloat(data.upload).toFixed(1);
+          const ping = parseFloat(data.ping).toFixed(1);
+
+          elSpeed.textContent = download;
+          document.getElementById('download').textContent = download + ' Мбит/с';
+          document.getElementById('upload').textContent = upload + ' Мбит/с';
+          document.getElementById('ping').textContent = ping + ' мс';
+
+          elLoading.style.display = 'none';
+          elStatus.textContent = '✅ Тест завершён';
+
+          isTesting = false;
+        };
+
+        document.body.appendChild(script);
+
+        setTimeout(() => {
+          if (isTesting) {
+            elLoading.style.display = 'none';
+            elStatus.textContent = '❌ Таймаут или ошибка';
+            elSpeed.textContent = '—';
+            isTesting = false;
+          }
+        }, 15000); // 15 секунд таймаут
+
+      } catch (err) {
+        console.error(err);
+        elSpeed.textContent = '—';
+        elLoading.style.display = 'none';
+        elStatus.textContent = '❌ Ошибка при тестировании';
+        isTesting = false;
       }
-
-      // Простая эмуляция выгрузки (реальная upload-проверка требует сервера — пропустим)
-      // В реальном проекте можно использовать librespeed/speedtest-net или аналоги
-      const upSpeed = downSpeed ? Math.min(downSpeed * 0.3, 50) : 0; // условно
-
-      // Отображаем основную скорость как download
-      elSpeed.textContent = downSpeed ? downSpeed.toFixed(1) : '0.0';
-      document.getElementById('download').textContent = (downSpeed ? downSpeed.toFixed(1) : '0.0') + ' Мбит/с';
-      document.getElementById('upload').textContent = upSpeed.toFixed(1) + ' Мбит/с';
-
-      isTesting = false;
     }
 
     function toggleAdvanced() {
       const adv = document.getElementById('advanced');
-      adv.style.display = adv.style.display === 'block' ? 'none' : 'block';
+      adv.classList.toggle('show');
     }
   </script>
 </body>
