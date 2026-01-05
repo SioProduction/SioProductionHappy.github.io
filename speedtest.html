@@ -9,19 +9,19 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Courier New', monospace;
     }
 
     body {
       background: #000;
-      color: #fff;
+      color: #0f0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      background: linear-gradient(135deg, #000, #111);
+      background: linear-gradient(135deg, #000, #000);
       overflow-x: hidden;
       position: relative;
     }
@@ -34,12 +34,13 @@
     }
 
     h1 {
-      color: #ff0000;
+      color: #0f0;
       font-size: 2.8rem;
       margin-bottom: 20px;
       font-weight: 700;
-      text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+      text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
       letter-spacing: 1px;
+      font-family: 'Courier New', monospace;
     }
 
     /* КРУГЛАЯ СКОРОСТЬ — как на speedtest.net */
@@ -47,14 +48,14 @@
       width: 200px;
       height: 200px;
       border-radius: 50%;
-      background: rgba(30, 30, 30, 0.8);
-      border: 4px solid #ff0000;
+      background: rgba(10, 10, 10, 0.8);
+      border: 4px solid #0f0;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 20px auto;
       position: relative;
-      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
       transition: transform 0.3s ease;
     }
 
@@ -65,8 +66,8 @@
     .speed-value {
       font-size: 3rem;
       font-weight: 900;
-      color: #ff0000;
-      text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+      color: #0f0;
+      text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     }
 
     .unit {
@@ -79,8 +80,8 @@
       font-size: 1.4rem;
       margin: 15px 0;
       font-weight: 600;
-      color: #ff5555;
-      text-shadow: 0 0 8px rgba(255, 85, 85, 0.5);
+      color: #0f0;
+      text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
       transition: all 0.3s ease;
     }
 
@@ -93,7 +94,7 @@
     }
 
     .btn {
-      background: linear-gradient(45deg, #ff0000, #ff3333);
+      background: linear-gradient(45deg, #0f0, #00ff00);
       color: #000;
       border: none;
       padding: 14px 30px;
@@ -102,7 +103,7 @@
       cursor: pointer;
       border-radius: 50px;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+      box-shadow: 0 4px 10px rgba(0, 255, 0, 0.3);
       position: relative;
       overflow: hidden;
       min-width: 160px;
@@ -125,8 +126,8 @@
 
     .btn:hover {
       transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 6px 15px rgba(255, 0, 0, 0.5);
-      background: linear-gradient(45deg, #ff3333, #ff5555);
+      box-shadow: 0 6px 15px rgba(0, 255, 0, 0.5);
+      background: linear-gradient(45deg, #00ff00, #00cc00);
     }
 
     .btn:active {
@@ -137,10 +138,10 @@
       margin-top: 30px;
       padding: 25px;
       background: rgba(20, 20, 20, 0.7);
-      border: 1px solid rgba(255, 0, 0, 0.3);
+      border: 1px solid rgba(0, 255, 0, 0.3);
       border-radius: 12px;
       backdrop-filter: blur(10px);
-      box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
       display: none;
       transition: opacity 0.3s ease;
     }
@@ -156,10 +157,11 @@
     }
 
     .advanced-info h2 {
-      color: #ff5555;
+      color: #0f0;
       margin-bottom: 20px;
       font-size: 1.5rem;
-      text-shadow: 0 0 8px #ff5555;
+      text-shadow: 0 0 8px #0f0;
+      font-family: 'Courier New', monospace;
     }
 
     .info-row {
@@ -183,13 +185,13 @@
 
     .info-value {
       font-weight: 600;
-      color: #ff0000;
+      color: #0f0;
     }
 
     .loading {
       display: none;
       font-size: 1.2rem;
-      color: #ff5555;
+      color: #0f0;
       margin-top: 10px;
       animation: pulse 1.5s infinite ease-in-out;
     }
@@ -212,18 +214,18 @@
       top: 20px;
       right: 20px;
       background: rgba(0, 0, 0, 0.7);
-      border: 1px solid rgba(255, 0, 0, 0.2);
+      border: 1px solid rgba(0, 255, 0, 0.2);
       border-radius: 4px;
       padding: 6px 10px;
       font-size: 0.8rem;
-      color: #ff5555;
+      color: #0f0;
       z-index: 100;
     }
 
     .login-field input {
       background: transparent;
       border: none;
-      color: #ff5555;
+      color: #0f0;
       font-size: 0.8rem;
       width: 80px;
       outline: none;
@@ -253,268 +255,9 @@
       background-size: contain;
     }
 
-    /* ЧЕРЕПАХИ С НЕБА */
+    /* ЧЕРЕПАШКИ С НЕБА */
     .turtle {
       position: absolute;
       top: -100px;
       font-size: 2rem;
-      color: #ff5555;
-      animation: fall 3s ease-out forwards;
-      z-index: 1000;
-    }
-
-    @keyframes fall {
-      to {
-        transform: translateY(100vh);
-      }
-    }
-
-    /* ЧАСТИЦЫ СНИЗУ */
-    canvas {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 150px;
-      pointer-events: none;
-      z-index: 5;
-    }
-  </style>
-</head>
-<body>
-  <!-- БОКОВЫЕ ГИФЫ -->
-  <div class="side-gif-left"></div>
-  <div class="side-gif-right"></div>
-
-  <!-- ЛОГИН ПОЛЕ -->
-  <div class="login-field">
-    <input type="text" id="loginInput" placeholder="логин" onkeydown="checkLogin(event)">
-  </div>
-
-  <!-- ЧАСТИЦЫ -->
-  <canvas id="particles"></canvas>
-
-  <!-- ОСНОВНОЙ КОНТЕНТ -->
-  <div class="container">
-    <h1>Спидтест</h1>
-    <div class="speed-circle">
-      <div class="speed-value" id="speed">—</div>
-    </div>
-    <div class="unit">Мбит/с</div>
-    <div class="message" id="message">—</div>
-    <div class="btn-group">
-      <button class="btn" onclick="startTest()">ТЕСТ СКОРОСТИ</button>
-      <button class="btn" onclick="toggleAdvanced()" style="background:linear-gradient(45deg, #333, #555); color:#ff5555;">ДОП. ИНФО</button>
-    </div>
-    <div class="loading" id="loading">Загрузка данных...</div>
-    <div class="status" id="status"></div>
-
-    <div class="advanced-info" id="advanced">
-      <h2>Расширенная информация</h2>
-      <div class="info-row">
-        <span class="info-label">Пинг:</span>
-        <span class="info-value" id="ping">— мс</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Загрузка:</span>
-        <span class="info-value" id="download">— Мбит/с</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Выгрузка:</span>
-        <span class="info-value" id="upload">— Мбит/с</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Источник:</span>
-        <span class="info-value">Локальный тест</span>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    let isTesting = false;
-    let turtlesFallen = false;
-
-    // Частицы снизу
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = 150;
-    }
-
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    const particles = [];
-    for (let i = 0; i < 50; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 3 + 1,
-        speed: Math.random() * 0.5 + 0.2,
-        alpha: Math.random()
-      });
-    }
-
-    function drawParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-      particles.forEach(p => {
-        p.y -= p.speed;
-        if (p.y < 0) p.y = canvas.height;
-        ctx.globalAlpha = p.alpha;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      requestAnimationFrame(drawParticles);
-    }
-
-    drawParticles();
-
-    async function startTest() {
-      if (isTesting) return;
-      isTesting = true;
-
-      const elSpeed = document.getElementById('speed');
-      const elMessage = document.getElementById('message');
-      const elLoading = document.getElementById('loading');
-      const elStatus = document.getElementById('status');
-
-      elSpeed.textContent = '...';
-      elMessage.textContent = '—';
-      elLoading.style.display = 'block';
-      elStatus.textContent = 'Подготовка...';
-
-      try {
-        // Проверяем логин
-        const login = document.getElementById('loginInput').value.trim().toLowerCase();
-
-        if (login === 'sio') {
-          setTimeout(() => {
-            elSpeed.textContent = '1228.0';
-            elMessage.textContent = '🚀 Скорость интернета ахуенная!';
-            elMessage.style.color = '#00ff00';
-            document.getElementById('download').textContent = '1228.0 Мбит/с';
-            document.getElementById('upload').textContent = '1228.0 Мбит/с';
-            document.getElementById('ping').textContent = '1.0 мс';
-            elLoading.style.display = 'none';
-            elStatus.textContent = '✅ Тест завершён';
-            isTesting = false;
-          }, 1000);
-          return;
-        }
-
-        if (login === 'ser_shavka') {
-          setTimeout(() => {
-            elSpeed.textContent = '-1488.0';
-            elMessage.textContent = '🤕 Вы в палестине! Ваш интренет в полной жопе! :(';
-            elMessage.style.color = '#ff5555';
-            document.getElementById('download').textContent = '-1488.0 Мбит/с';
-            document.getElementById('upload').textContent = '-1488.0 Мбит/с';
-            document.getElementById('ping').textContent = '9999.0 мс';
-            elLoading.style.display = 'none';
-            elStatus.textContent = '❌ Тест завершён (с юмором)';
-            isTesting = false;
-          }, 1000);
-          return;
-        }
-
-        // Обычный тест
-        const ping = await measurePing();
-        document.getElementById('ping').textContent = ping.toFixed(1) + ' мс';
-
-        const download = await measureDownload();
-        document.getElementById('download').textContent = download.toFixed(1) + ' Мбит/с';
-
-        const upload = Math.min(download * 0.3, 50).toFixed(1);
-        document.getElementById('upload').textContent = upload + ' Мбит/с';
-
-        elSpeed.textContent = download.toFixed(1);
-
-        // Сообщение по скорости
-        if (download > 50) {
-          elMessage.textContent = '🚀 У вас спид!';
-          elMessage.style.color = '#00ff00';
-        } else if (download > 10) {
-          elMessage.textContent = '🐢 У вас вич!';
-          elMessage.style.color = '#ffff00';
-        } else {
-          elMessage.textContent = '🤕 Вы здоровые?';
-          elMessage.style.color = '#ff5555';
-        }
-
-        // Падающие черепахи (один раз)
-        if (!turtlesFallen) {
-          for (let i = 0; i < 3; i++) {
-            const turtle = document.createElement('div');
-            turtle.className = 'turtle';
-            turtle.textContent = '🐢';
-            turtle.style.left = (Math.random() * 80 + 10) + '%';
-            turtle.style.animationDelay = (i * 0.3) + 's';
-            document.body.appendChild(turtle);
-            setTimeout(() => {
-              turtle.remove();
-            }, 3000);
-          }
-          turtlesFallen = true;
-        }
-
-        elLoading.style.display = 'none';
-        elStatus.textContent = '✅ Готово';
-
-        isTesting = false;
-
-      } catch (err) {
-        console.error(err);
-        elSpeed.textContent = '—';
-        elMessage.textContent = '❌ Ошибка';
-        elLoading.style.display = 'none';
-        elStatus.textContent = '⚠️ Не удалось измерить';
-        isTesting = false;
-      }
-    }
-
-    async function measurePing() {
-      const start = performance.now();
-      try {
-        await fetch('https://httpbin.org/get?r=' + Math.random(), { cache: 'no-store' });
-      } catch (e) {
-        return 100;
-      }
-      const end = performance.now();
-      return end - start;
-    }
-
-    async function measureDownload() {
-      const url = 'https://speed.cloudflare.com/__down?bytes=10000000';
-      const start = performance.now();
-
-      try {
-        const resp = await fetch(url + `&r=${Math.random()}`, { cache: 'no-store' });
-        const data = await resp.arrayBuffer();
-        const end = performance.now();
-
-        const duration = (end - start) / 1000;
-        const bitsLoaded = data.byteLength * 8;
-        const bps = bitsLoaded / duration;
-        return bps / 1_000_000;
-      } catch (e) {
-        return 0;
-      }
-    }
-
-    function toggleAdvanced() {
-      const adv = document.getElementById('advanced');
-      adv.classList.toggle('show');
-    }
-
-    function checkLogin(e) {
-      if (e.key === 'Enter') {
-        startTest();
-      }
-    }
-  </script>
-</body>
-</html>
+      color: #0f0
