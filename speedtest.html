@@ -272,4 +272,13 @@
 
     function clearTurtles() {
       turtles.forEach(t => t.remove());
-     
+      turtles = [];
+    }
+
+    function toggleAdvanced() {
+      const el = document.getElementById('advanced');
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+  </script>
+</body>
+</html>
