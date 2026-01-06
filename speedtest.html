@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Спидтест</title>
+  <title>SpeedTestForSio</title>
   <style>
     * {
       margin: 0;
@@ -42,7 +42,6 @@
       letter-spacing: 1px;
     }
 
-    /* КРУГЛАЯ СКОРОСТЬ — как на speedtest.net */
     .speed-circle {
       width: 200px;
       height: 200px;
@@ -82,6 +81,22 @@
       color: #00ff00;
       text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
       transition: all 0.3s ease;
+    }
+
+    .palestine-note {
+      font-size: 1.2rem;
+      margin-top: 10px;
+      color: #ff5555;
+      text-shadow: 0 0 6px rgba(255, 85, 85, 0.5);
+      display: none;
+    }
+
+    .vpn-note {
+      font-size: 1.2rem;
+      margin-top: 10px;
+      color: #ff5555;
+      text-shadow: 0 0 6px rgba(255, 85, 85, 0.5);
+      display: none;
     }
 
     .btn-group {
@@ -206,7 +221,6 @@
       margin-top: 10px;
     }
 
-    /* ЛОГИН ПОЛЕ — СВЕРХУ СПРАВА */
     .login-field {
       position: fixed;
       top: 20px;
@@ -229,7 +243,6 @@
       outline: none;
     }
 
-    /* БОКОВЫЕ GIF */
     .side-gif-left,
     .side-gif-right {
       position: fixed;
@@ -253,7 +266,6 @@
       background-size: contain;
     }
 
-    /* БОКОВЫЕ ЧЕРЕПАШКИ (ВО ВРЕМЯ ТЕСТА) */
     .side-turtle {
       position: fixed;
       top: 50%;
@@ -266,20 +278,14 @@
       pointer-events: none;
     }
 
-    #turtle-left {
-      left: 30px;
-    }
-
-    #turtle-right {
-      right: 30px;
-    }
+    #turtle-left { left: 30px; }
+    #turtle-right { right: 30px; }
 
     @keyframes spin {
       from { transform: translateY(-50%) rotate(0deg); }
       to { transform: translateY(-50%) rotate(360deg); }
     }
 
-    /* ЧАСТИЦЫ СНИЗУ — ЗЕЛЁНЫЕ */
     canvas {
       position: fixed;
       bottom: 0;
@@ -292,26 +298,24 @@
   </style>
 </head>
 <body>
-  <!-- БОКОВЫЕ GIF -->
   <div class="side-gif-left"></div>
   <div class="side-gif-right"></div>
 
-  <!-- ЛОГИН ПОЛЕ -->
   <div class="login-field">
     <input type="text" id="loginInput" placeholder="логин" onkeydown="checkLogin(event)">
   </div>
 
-  <!-- ЧАСТИЦЫ -->
   <canvas id="particles"></canvas>
 
-  <!-- ОСНОВНОЙ КОНТЕНТ -->
   <div class="container">
-    <h1>Спидтест</h1>
+    <h1>СПИДтест🐢</h1>
     <div class="speed-circle">
       <div class="speed-value" id="speed">—</div>
     </div>
     <div class="unit">Мбит/с</div>
     <div class="message" id="message">—</div>
+    <div class="palestine-note" id="palestineNote">ого вы в палестине?</div>
+    <div class="vpn-note" id="vpnNote">у вас впн идите нахуй!</div>
     <div class="btn-group">
       <button class="btn" onclick="startTest()">ТЕСТ СКОРОСТИ</button>
       <button class="btn" onclick="toggleAdvanced()" style="background:linear-gradient(45deg, #333, #555); color:#00ff00;">ДОП. ИНФО</button>
@@ -335,7 +339,7 @@
       </div>
       <div class="info-row">
         <span class="info-label">Источник:</span>
-        <span class="info-value">Локальный тест</span>
+        <span class="info-value">Cloudflare Speedtest</span>
       </div>
     </div>
   </div>
@@ -345,7 +349,7 @@
     let turtleLeft = null;
     let turtleRight = null;
 
-    // Частицы снизу — ЗЕЛЁНЫЕ
+    // Зелёные частицы
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
 
@@ -353,7 +357,6 @@
       canvas.width = window.innerWidth;
       canvas.height = 150;
     }
-
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
@@ -381,7 +384,6 @@
       });
       requestAnimationFrame(drawParticles);
     }
-
     drawParticles();
 
     function showSideTurtles() {
@@ -405,9 +407,15 @@
       turtleRight = null;
     }
 
+    function hideAllNotes() {
+      document.getElementById('palestineNote').style.display = 'none';
+      document.getElementById('vpnNote').style.display = 'none';
+    }
+
     async function startTest() {
       if (isTesting) return;
       isTesting = true;
+      hideAllNotes();
 
       const elSpeed = document.getElementById('speed');
       const elMessage = document.getElementById('message');
@@ -417,7 +425,7 @@
       elSpeed.textContent = '...';
       elMessage.textContent = '—';
       elLoading.style.display = 'block';
-      elStatus.textContent = 'Подготовка...';
+      elStatus.textContent = 'Подключение...';
 
       showSideTurtles();
 
@@ -426,12 +434,12 @@
 
         if (login === 'sio') {
           setTimeout(() => {
-            elSpeed.textContent = '1228.0';
-            elMessage.textContent = '🚀 У вас спид!';
+            elSpeed.textContent = '∞';
+            elMessage.textContent = '🚀 Скорость бесконечна!';
             elMessage.style.color = '#00ff00';
-            document.getElementById('download').textContent = '1228.0 Мбит/с';
-            document.getElementById('upload').textContent = '1228.0 Мбит/с';
-            document.getElementById('ping').textContent = '1.0 мс';
+            document.getElementById('download').textContent = '∞ Мбит/с';
+            document.getElementById('upload').textContent = '∞ Мбит/с';
+            document.getElementById('ping').textContent = '0.0 мс';
             elLoading.style.display = 'none';
             elStatus.textContent = '✅ Тест завершён';
             isTesting = false;
@@ -448,6 +456,7 @@
             document.getElementById('download').textContent = '-1488.0 Мбит/с';
             document.getElementById('upload').textContent = '-1488.0 Мбит/с';
             document.getElementById('ping').textContent = '9999.0 мс';
+            document.getElementById('palestineNote').style.display = 'block';
             elLoading.style.display = 'none';
             elStatus.textContent = '✅ Тест завершён';
             isTesting = false;
@@ -456,18 +465,33 @@
           return;
         }
 
-        // Обычный тест
-        const ping = await measurePing();
-        document.getElementById('ping').textContent = ping.toFixed(1) + ' мс';
+        if (login === 'shrimp') {
+          setTimeout(() => {
+            elSpeed.textContent = '0.0';
+            elMessage.textContent = '🔒 ВПН обнаружен';
+            elMessage.style.color = '#ff5555';
+            document.getElementById('download').textContent = '0.0 Мбит/с';
+            document.getElementById('upload').textContent = '0.0 Мбит/с';
+            document.getElementById('ping').textContent = '∞ мс';
+            document.getElementById('vpnNote').style.display = 'block';
+            elLoading.style.display = 'none';
+            elStatus.textContent = '❌ ВПН';
+            isTesting = false;
+            setTimeout(hideSideTurtles, 500);
+          }, 1000);
+          return;
+        }
 
+        // === Cloudflare Speedtest ===
+        elStatus.textContent = 'Измерение пинга...';
+        const ping = await measurePing();
+
+        elStatus.textContent = 'Измерение загрузки...';
         const download = await measureDownload();
-        document.getElementById('download').textContent = download.toFixed(1) + ' Мбит/с';
 
         const upload = Math.min(download * 0.3, 50).toFixed(1);
-        document.getElementById('upload').textContent = upload + ' Мбит/с';
 
-        elSpeed.textContent = download.toFixed(1);
-
+        // Отображение
         if (download > 50) {
           elMessage.textContent = '🚀 У вас спид!';
           elMessage.style.color = '#00ff00';
@@ -477,6 +501,16 @@
         } else {
           elMessage.textContent = '🤕 Вы здоровые?';
           elMessage.style.color = '#ff5555';
+        }
+
+        elSpeed.textContent = download.toFixed(1);
+        document.getElementById('download').textContent = download.toFixed(1) + ' Мбит/с';
+        document.getElementById('upload').textContent = upload + ' Мбит/с';
+        document.getElementById('ping').textContent = ping.toFixed(1) + ' мс';
+
+        // Палестина при -1488? (на случай ручного ввода)
+        if (download.toFixed(1) === '-1488.0' || login === 'ser_shavka') {
+          document.getElementById('palestineNote').style.display = 'block';
         }
 
         elLoading.style.display = 'none';
@@ -498,27 +532,24 @@
     async function measurePing() {
       const start = performance.now();
       try {
-        await fetch('https://httpbin.org/get?r=' + Math.random(), { cache: 'no-store' });
+        await fetch('https://speed.cloudflare.com/__up', { method: 'POST', body: 'x'.repeat(1000), cache: 'no-store' });
       } catch (e) {
-        return 100;
+        // fallback
       }
-      const end = performance.now();
-      return end - start;
+      return performance.now() - start;
     }
 
     async function measureDownload() {
-      const url = 'https://speed.cloudflare.com/__down?bytes=10000000';
+      const url = 'https://speed.cloudflare.com/__down?bytes=25000000'; // 25 МБ
       const start = performance.now();
-
       try {
         const resp = await fetch(url + `&r=${Math.random()}`, { cache: 'no-store' });
         const data = await resp.arrayBuffer();
         const end = performance.now();
-
-        const duration = (end - start) / 1000;
+        const duration = (end - start) / 1000; // секунды
         const bitsLoaded = data.byteLength * 8;
         const bps = bitsLoaded / duration;
-        return bps / 1_000_000;
+        return bps / 1_000_000; // Мбит/с
       } catch (e) {
         return 0;
       }
