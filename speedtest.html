@@ -9,18 +9,19 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Courier New', monospace;
+      font-family: 'Segoe UI', system-ui, sans-serif;
     }
 
     body {
       background: #000;
-      color: #0f0;
+      color: #fff;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 20px;
+      background: linear-gradient(135deg, #000, #111);
       overflow-x: hidden;
       position: relative;
     }
@@ -33,138 +34,290 @@
     }
 
     h1 {
-      color: #0f0;
-      font-size: 2.5rem;
+      color: #00ff00;
+      font-size: 2.8rem;
       margin-bottom: 20px;
-      text-shadow: 0 0 10px #0f0;
+      font-weight: 700;
+      text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+      letter-spacing: 1px;
     }
 
+    /* КРУГЛАЯ СКОРОСТЬ — как на speedtest.net */
     .speed-circle {
-      width: 180px;
-      height: 180px;
+      width: 200px;
+      height: 200px;
       border-radius: 50%;
-      background: rgba(10, 10, 10, 0.8);
-      border: 3px solid #0f0;
+      background: rgba(30, 30, 30, 0.8);
+      border: 4px solid #00ff00;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 20px auto;
-      box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+      position: relative;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .speed-circle:hover {
+      transform: scale(1.05);
     }
 
     .speed-value {
-      font-size: 2.8rem;
-      font-weight: bold;
-      color: #0f0;
-      text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+      font-size: 3rem;
+      font-weight: 900;
+      color: #00ff00;
+      text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     }
 
     .unit {
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       opacity: 0.8;
-      margin-top: 5px;
+      margin-top: -10px;
     }
 
     .message {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       margin: 15px 0;
-      color: #0f0;
-      text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+      font-weight: 600;
+      color: #00ff00;
+      text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .btn {
-      background: #0f0;
+      background: linear-gradient(45deg, #00cc00, #00ff00);
       color: #000;
       border: none;
-      padding: 12px 28px;
+      padding: 14px 30px;
       font-size: 1.1rem;
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
       border-radius: 50px;
-      transition: all 0.2s;
-      margin-top: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 255, 0, 0.3);
+      position: relative;
+      overflow: hidden;
       min-width: 160px;
     }
 
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
     .btn:hover {
-      background: #00ff00;
-      transform: scale(1.03);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 15px rgba(0, 255, 0, 0.5);
+      background: linear-gradient(45deg, #00ff00, #33ff33);
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(0.98);
     }
 
     .advanced-info {
-      margin-top: 25px;
-      padding: 20px;
+      margin-top: 30px;
+      padding: 25px;
       background: rgba(20, 20, 20, 0.7);
       border: 1px solid rgba(0, 255, 0, 0.3);
-      border-radius: 8px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
       display: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .advanced-info.show {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .advanced-info h2 {
-      color: #0f0;
-      margin-bottom: 15px;
-      font-size: 1.3rem;
+      color: #00ff00;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      text-shadow: 0 0 8px #00ff00;
     }
 
     .info-row {
       display: flex;
       justify-content: space-between;
-      margin: 8px 0;
-      padding: 6px 0;
+      margin: 12px 0;
+      padding: 10px;
+      background: rgba(30, 30, 30, 0.5);
+      border-radius: 6px;
+      transition: background 0.2s;
     }
 
-    .info-label { opacity: 0.7; }
-    .info-value { font-weight: bold; color: #0f0; }
+    .info-row:hover {
+      background: rgba(50, 50, 50, 0.5);
+    }
 
+    .info-label {
+      opacity: 0.8;
+      font-weight: 500;
+    }
+
+    .info-value {
+      font-weight: 600;
+      color: #00ff00;
+    }
+
+    .loading {
+      display: none;
+      font-size: 1.2rem;
+      color: #00ff00;
+      margin-top: 10px;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    .status {
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 10px;
+    }
+
+    /* ЛОГИН ПОЛЕ — СВЕРХУ СПРАВА */
     .login-field {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 0.85rem;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(0, 255, 0, 0.2);
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      color: #00ff00;
+      z-index: 100;
     }
 
     .login-field input {
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid #0f0;
-      color: #0f0;
-      padding: 4px 8px;
-      font-family: 'Courier New', monospace;
-      width: 90px;
+      background: transparent;
+      border: none;
+      color: #00ff00;
+      font-size: 0.8rem;
+      width: 80px;
+      outline: none;
     }
 
-    .turtle {
-      position: absolute;
-      top: -80px;
-      font-size: 1.8rem;
-      color: #0f0;
-      animation: fall 5s ease-out forwards;
+    /* БОКОВЫЕ GIF */
+    .side-gif-left,
+    .side-gif-right {
+      position: fixed;
+      top: 0;
+      width: 100px;
+      height: 100vh;
+      z-index: 1;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .side-gif-left {
+      left: 0;
+      background: url('pic/modem.gif') no-repeat center;
+      background-size: contain;
+    }
+
+    .side-gif-right {
+      right: 0;
+      background: url('pic/modem.gif') no-repeat center;
+      background-size: contain;
+    }
+
+    /* БОКОВЫЕ ЧЕРЕПАШКИ (ВО ВРЕМЯ ТЕСТА) */
+    .side-turtle {
+      position: fixed;
+      top: 50%;
+      font-size: 3rem;
+      color: #00ff00;
+      transform: translateY(-50%);
+      z-index: 1000;
+      animation: spin 4s linear infinite;
       opacity: 1;
+      pointer-events: none;
     }
 
-    @keyframes fall {
-      to {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0;
-      }
+    #turtle-left {
+      left: 30px;
+    }
+
+    #turtle-right {
+      right: 30px;
+    }
+
+    @keyframes spin {
+      from { transform: translateY(-50%) rotate(0deg); }
+      to { transform: translateY(-50%) rotate(360deg); }
+    }
+
+    /* ЧАСТИЦЫ СНИЗУ — ЗЕЛЁНЫЕ */
+    canvas {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      pointer-events: none;
+      z-index: 5;
     }
   </style>
 </head>
 <body>
-  <!-- Поле логина -->
+  <!-- БОКОВЫЕ GIF -->
+  <div class="side-gif-left"></div>
+  <div class="side-gif-right"></div>
+
+  <!-- ЛОГИН ПОЛЕ -->
   <div class="login-field">
-    <input type="text" id="loginInput" placeholder="логин" onkeydown="if(event.key==='Enter') startTest()">
+    <input type="text" id="loginInput" placeholder="логин" onkeydown="checkLogin(event)">
   </div>
 
-  <!-- Основной контент -->
+  <!-- ЧАСТИЦЫ -->
+  <canvas id="particles"></canvas>
+
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
   <div class="container">
-    <h1>СПИДТЕСТ</h1>
+    <h1>Спидтест</h1>
     <div class="speed-circle">
       <div class="speed-value" id="speed">—</div>
     </div>
     <div class="unit">Мбит/с</div>
     <div class="message" id="message">—</div>
-    <button class="btn" onclick="startTest()">ТЕСТ СКОРОСТИ</button>
-    <button class="btn" style="background:#333;color:#0f0;margin-top:10px;" onclick="toggleAdvanced()">ДОП. ИНФО</button>
+    <div class="btn-group">
+      <button class="btn" onclick="startTest()">ТЕСТ СКОРОСТИ</button>
+      <button class="btn" onclick="toggleAdvanced()" style="background:linear-gradient(45deg, #333, #555); color:#00ff00;">ДОП. ИНФО</button>
+    </div>
+    <div class="loading" id="loading">Загрузка данных...</div>
+    <div class="status" id="status"></div>
 
     <div class="advanced-info" id="advanced">
       <h2>Расширенная информация</h2>
@@ -180,104 +333,206 @@
         <span class="info-label">Выгрузка:</span>
         <span class="info-value" id="upload">— Мбит/с</span>
       </div>
+      <div class="info-row">
+        <span class="info-label">Источник:</span>
+        <span class="info-value">Локальный тест</span>
+      </div>
     </div>
   </div>
 
   <script>
     let isTesting = false;
-    let turtles = [];
+    let turtleLeft = null;
+    let turtleRight = null;
 
-    function startTest() {
+    // Частицы снизу — ЗЕЛЁНЫЕ
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = 150;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const particles = [];
+    for (let i = 0; i < 50; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 3 + 1,
+        speed: Math.random() * 0.5 + 0.2,
+        alpha: Math.random()
+      });
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
+      particles.forEach(p => {
+        p.y -= p.speed;
+        if (p.y < 0) p.y = canvas.height;
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      requestAnimationFrame(drawParticles);
+    }
+
+    drawParticles();
+
+    function showSideTurtles() {
+      hideSideTurtles();
+      turtleLeft = document.createElement('div');
+      turtleLeft.id = 'turtle-left';
+      turtleLeft.className = 'side-turtle';
+      turtleLeft.textContent = '🐢';
+      turtleRight = document.createElement('div');
+      turtleRight.id = 'turtle-right';
+      turtleRight.className = 'side-turtle';
+      turtleRight.textContent = '🐢';
+      document.body.appendChild(turtleLeft);
+      document.body.appendChild(turtleRight);
+    }
+
+    function hideSideTurtles() {
+      if (turtleLeft) turtleLeft.remove();
+      if (turtleRight) turtleRight.remove();
+      turtleLeft = null;
+      turtleRight = null;
+    }
+
+    async function startTest() {
       if (isTesting) return;
       isTesting = true;
 
-      const login = document.getElementById('loginInput').value.trim().toLowerCase();
-      const speedEl = document.getElementById('speed');
-      const msgEl = document.getElementById('message');
-      const pingEl = document.getElementById('ping');
-      const downEl = document.getElementById('download');
-      const upEl = document.getElementById('upload');
+      const elSpeed = document.getElementById('speed');
+      const elMessage = document.getElementById('message');
+      const elLoading = document.getElementById('loading');
+      const elStatus = document.getElementById('status');
 
-      // Сброс
-      speedEl.textContent = '...';
-      msgEl.textContent = '';
+      elSpeed.textContent = '...';
+      elMessage.textContent = '—';
+      elLoading.style.display = 'block';
+      elStatus.textContent = 'Подготовка...';
 
-      // Секретные логины
-      if (login === 'sio') {
-        setTimeout(() => {
-          speedEl.textContent = '1228.0';
-          msgEl.textContent = '🚀 У вас спид!';
-          pingEl.textContent = '1.0 мс';
-          downEl.textContent = '1228.0 Мбит/с';
-          upEl.textContent = '1228.0 Мбит/с';
-          isTesting = false;
-          createTurtles();
-          setTimeout(() => { clearTurtles(); }, 4000);
-        }, 800);
-        return;
-      }
+      showSideTurtles();
 
-      if (login === 'ser_shavka') {
-        setTimeout(() => {
-          speedEl.textContent = '-1488.0';
-          msgEl.textContent = '🐢 У вас вич!';
-          pingEl.textContent = '9999.0 мс';
-          downEl.textContent = '-1488.0 Мбит/с';
-          upEl.textContent = '-1488.0 Мбит/с';
-          isTesting = false;
-          createTurtles();
-          setTimeout(() => { clearTurtles(); }, 4000);
-        }, 800);
-        return;
-      }
+      try {
+        const login = document.getElementById('loginInput').value.trim().toLowerCase();
 
-      // Обычный тест — эмуляция
-      const download = (Math.random() * 60 + 5).toFixed(1);
-      const upload = (download * 0.3).toFixed(1);
-      const ping = (Math.random() * 50 + 10).toFixed(0);
-
-      setTimeout(() => {
-        speedEl.textContent = download;
-        pingEl.textContent = ping + ' мс';
-        downEl.textContent = download + ' Мбит/с';
-        upEl.textContent = upload + ' Мбит/с';
-
-        if (download > 50) {
-          msgEl.textContent = '🚀 У вас спид!';
-        } else if (download > 10) {
-          msgEl.textContent = '🐢 У вас вич!';
-        } else {
-          msgEl.textContent = '🤕 Вы здоровые?';
+        if (login === 'sio') {
+          setTimeout(() => {
+            elSpeed.textContent = '1228.0';
+            elMessage.textContent = '🚀 У вас спид!';
+            elMessage.style.color = '#00ff00';
+            document.getElementById('download').textContent = '1228.0 Мбит/с';
+            document.getElementById('upload').textContent = '1228.0 Мбит/с';
+            document.getElementById('ping').textContent = '1.0 мс';
+            elLoading.style.display = 'none';
+            elStatus.textContent = '✅ Тест завершён';
+            isTesting = false;
+            setTimeout(hideSideTurtles, 500);
+          }, 1000);
+          return;
         }
 
-        createTurtles();
-        setTimeout(() => { clearTurtles(); }, 4000);
-        isTesting = false;
-      }, 1200);
-    }
+        if (login === 'ser_shavka') {
+          setTimeout(() => {
+            elSpeed.textContent = '-1488.0';
+            elMessage.textContent = '🐢 У вас вич!';
+            elMessage.style.color = '#ffff00';
+            document.getElementById('download').textContent = '-1488.0 Мбит/с';
+            document.getElementById('upload').textContent = '-1488.0 Мбит/с';
+            document.getElementById('ping').textContent = '9999.0 мс';
+            elLoading.style.display = 'none';
+            elStatus.textContent = '✅ Тест завершён';
+            isTesting = false;
+            setTimeout(hideSideTurtles, 500);
+          }, 1000);
+          return;
+        }
 
-    function createTurtles() {
-      clearTurtles();
-      for (let i = 0; i < 12; i++) {
-        const turtle = document.createElement('div');
-        turtle.className = 'turtle';
-        turtle.textContent = '🐢';
-        turtle.style.left = (Math.random() * 85 + 5) + '%';
-        turtle.style.animationDelay = (i * 0.1) + 's';
-        turtle.style.animationDuration = (4 + Math.random() * 2) + 's';
-        document.body.appendChild(turtle);
-        turtles.push(turtle);
+        // Обычный тест
+        const ping = await measurePing();
+        document.getElementById('ping').textContent = ping.toFixed(1) + ' мс';
+
+        const download = await measureDownload();
+        document.getElementById('download').textContent = download.toFixed(1) + ' Мбит/с';
+
+        const upload = Math.min(download * 0.3, 50).toFixed(1);
+        document.getElementById('upload').textContent = upload + ' Мбит/с';
+
+        elSpeed.textContent = download.toFixed(1);
+
+        if (download > 50) {
+          elMessage.textContent = '🚀 У вас спид!';
+          elMessage.style.color = '#00ff00';
+        } else if (download > 10) {
+          elMessage.textContent = '🐢 У вас вич!';
+          elMessage.style.color = '#ffff00';
+        } else {
+          elMessage.textContent = '🤕 Вы здоровые?';
+          elMessage.style.color = '#ff5555';
+        }
+
+        elLoading.style.display = 'none';
+        elStatus.textContent = '✅ Готово';
+        isTesting = false;
+        setTimeout(hideSideTurtles, 500);
+
+      } catch (err) {
+        console.error(err);
+        elSpeed.textContent = '—';
+        elMessage.textContent = '❌ Ошибка';
+        elLoading.style.display = 'none';
+        elStatus.textContent = '⚠️ Не удалось измерить';
+        isTesting = false;
+        hideSideTurtles();
       }
     }
 
-    function clearTurtles() {
-      turtles.forEach(t => t.remove());
-      turtles = [];
+    async function measurePing() {
+      const start = performance.now();
+      try {
+        await fetch('https://httpbin.org/get?r=' + Math.random(), { cache: 'no-store' });
+      } catch (e) {
+        return 100;
+      }
+      const end = performance.now();
+      return end - start;
+    }
+
+    async function measureDownload() {
+      const url = 'https://speed.cloudflare.com/__down?bytes=10000000';
+      const start = performance.now();
+
+      try {
+        const resp = await fetch(url + `&r=${Math.random()}`, { cache: 'no-store' });
+        const data = await resp.arrayBuffer();
+        const end = performance.now();
+
+        const duration = (end - start) / 1000;
+        const bitsLoaded = data.byteLength * 8;
+        const bps = bitsLoaded / duration;
+        return bps / 1_000_000;
+      } catch (e) {
+        return 0;
+      }
     }
 
     function toggleAdvanced() {
-      const el = document.getElementById('advanced');
-      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+      const adv = document.getElementById('advanced');
+      adv.classList.toggle('show');
+    }
+
+    function checkLogin(e) {
+      if (e.key === 'Enter') {
+        startTest();
+      }
     }
   </script>
 </body>
