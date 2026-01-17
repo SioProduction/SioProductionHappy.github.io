@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>My Horror Web Forum</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFFFF;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 980px;
+            margin: 0 auto;
+            border: 1px solid #000;
+        }
+        .header {
+            background-color: #FFFFFF;
+            padding: 5px;
+            text-align: center;
+        }
+        .nav-bar {
+            background-color: #CC3333;
+            padding: 5px;
+            text-align: right;
+            font-size: 12px;
+            color: white;
+        }
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        .nav-icons {
+            text-align: right;
+            padding: 5px;
+        }
+        .nav-icons img {
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+        }
+        .main-content {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+        }
+        .left-column {
+            flex: 3;
+        }
+        .right-column {
+            flex: 1;
+            background-color: #FFFFFF;
+        }
+        .section {
+            margin-bottom: 15px;
+            border: 1px solid #000;
+        }
+        .section-header {
+            background-color: #3399CC;
+            color: white;
+            padding: 5px;
+            font-weight: bold;
+        }
+        .post {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #CCC;
+        }
+        .post-blue {
+            background-color: #E6E6FF;
+        }
+        .post-yellow {
+            background-color: #FFFF99;
+        }
+        .post-avatar {
+            float: left;
+            width: 40px;
+            height: 40px;
+            background-color: #F0F0F0;
+            margin-right: 10px;
+            border: 1px solid #AAA;
+        }
+        .sidebar-box {
+            background-color: #CC3333;
+            color: white;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        .sidebar-box h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+        }
+        .search-box {
+            background-color: #FFFFFF;
+            padding: 5px;
+        }
+        .search-box input[type="text"] {
+            width: 100%;
+            padding: 2px;
+            font-size: 12px;
+        }
+        .search-box input[type="submit"] {
+            width: 100%;
+            padding: 2px;
+            font-size: 12px;
+            background-color: #CCCCCC;
+            border: 1px solid #999;
+        }
+        .footer {
+            text-align: center;
+            padding: 5px;
+            font-size: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка -->
+        <div class="header">
+            <img src="https://via.placeholder.com/300x80?text=ROBLOX+HQ" alt="Logo" style="vertical-align: middle;">
+            <div class="nav-icons">
+                <img src="https://via.placeholder.com/40x40?text=PR" alt="Place Reviews">
+                <img src="https://via.placeholder.com/40x40?text=N" alt="Noobmeter">
+                <img src="https://via.placeholder.com/40x40?text=LC" alt="Level Calc">
+                <img src="https://via.placeholder.com/40x40?text=F" alt="Forums">
+                <img src="https://via.placeholder.com/40x40?text=W" alt="Wallpapers">
+                <img src="https://via.placeholder.com/40x40?text=SM" alt="Stock Market">
+            </div>
+        </div>
+
+        <!-- Навигация -->
+        <div class="nav-bar">
+            <a href="#">Login</a> | 
+            <a href="#">Register</a> | 
+            <a href="#">User List</a> | 
+            <a href="#">Rules</a> | 
+            <a href="#">FAQ</a> | 
+            <a href="#">RSS</a>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="main-content">
+            <!-- Левая колонка -->
+            <div class="left-column">
+                <!-- Последние отзывы -->
+                <div class="section">
+                    <div class="section-header">Latest Place Reviews</div>
+                    <div class="post post-blue">
+                        <div class="post-avatar"></div>
+                        <strong>GAMEPLAY:</strong> --rating-- / 8<br><br>
+                        --The game is good fo someone who wants to show off thier building skills, but the downside is that other player always have the ability to resize...<br><br>
+                        by [User]
+                    </div>
+                    <div class="post post-yellow">
+                        <div class="post-avatar"></div>
+                        Hello! For whatever reason you may want to read this for, I just want to warn/inform you of a few things first.<br><br>
+                        -My reviews are usually EXTREMELY long.<br>
+                        -I play each game a minimum o...<br><br>
+                        by [User]
+                    </div>
+                    <div class="post post-blue">
+                        <div class="post-avatar"></div>
+                        <strong>GAMEPLAY:</strong> 9/10<br><br>
+                        The gameplay? It was fun. Except for the fact that it took forever for me to find a working server. )x On some servers, when I pressed Y, the jet wouldn't go. On o...<br><br>
+                        by [User]
+                    </div>
+                </div>
+
+                <!-- Форум упал -->
+                <div class="section">
+                    <div class="section-header">Forum Down</div>
+                    <div class="post">
+                        <strong>#33 - MONDAY 2010-08-16 BY</strong><br><br>
+                        I realized the forum is down. It's because the database got so big that the hoster complained. Gimme some time to figure it out.
+                    </div>
+                </div>
+
+                <!-- Almasy Tactics -->
+                <div class="section">
+                    <div class="section-header">Almasy Tactics</div>
+                    <div class="post">
+                        <strong>#32 - SUNDAY 2010-05-16 BY</strong><br><br>
+                        I've been working on a new browser game called <a href="#">Almasy Tactics</a>!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая колонка -->
+            <div class="right-column">
+                <div class="sidebar-box">
+                    <p>Welcome to My Horror Web, the first and largest fansite! Note: This site is NOT affiliated with any game in any way. Nothing said here reflects on the main site.</p>
+                </div>
+
+                <div class="sidebar-box">
+                    <h3>Search the Site</h3>
+                    <div class="search-box">
+                        <input type="text" placeholder="Google™ Custom Search">
+                        <input type="submit" value="Search">
+                    </div>
+                </div>
+
+                <div class="sidebar-box">
+                    <h3>ROFL Index : 1,653 (+1653)</h3>
+                </div>
+
+                <div class="sidebar-box">
+                    <h3>None right now.</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Подвал -->
+        <div class="footer">
+            © 2026 My Horror Web — All Rights Reserved. No affiliation with any official game.
+        </div>
+    </div>
+</body>
+</html>
