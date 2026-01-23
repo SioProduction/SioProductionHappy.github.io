@@ -2,40 +2,54 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>My Horror Web Forum</title>
+    <title>Roblox Community Forum</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #FFFFFF;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
+            color: #333;
         }
         .container {
             width: 980px;
-            margin: 0 auto;
-            border: 1px solid #000;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .header {
-            background-color: #FFFFFF;
-            padding: 5px;
-            text-align: center;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header img {
+            height: 40px;
         }
         .nav-bar {
-            background-color: #CC3333;
-            padding: 5px;
-            text-align: right;
-            font-size: 12px;
-            color: white;
+            background-color: #333;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            font-size: 13px;
         }
         .nav-bar a {
             color: white;
             text-decoration: none;
-            margin: 0 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .nav-bar a:hover {
+            background-color: #555;
         }
         .main-content {
             display: flex;
-            gap: 10px;
-            padding: 10px;
+            gap: 15px;
+            padding: 15px;
         }
         .left-column {
             flex: 3;
@@ -44,65 +58,126 @@
             flex: 1;
         }
         .section {
-            margin-bottom: 15px;
-            border: 1px solid #000;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
         }
         .section-header {
-            background-color: #3399CC;
+            background-color: #2c3e50;
             color: white;
-            padding: 5px;
+            padding: 8px 15px;
             font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-header .action-btn {
+            background: #3498db;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-decoration: none;
         }
         .post {
-            padding: 10px;
+            padding: 15px;
             margin: 5px 0;
-            border: 1px solid #CCC;
+            border-top: 1px solid #eee;
+            background-color: #fff;
         }
         .post-blue {
-            background-color: #E6E6FF;
+            background-color: #eaf2f8;
         }
         .post-yellow {
-            background-color: #FFFF99;
+            background-color: #fff9c4;
         }
         .post-avatar {
             float: left;
             width: 40px;
             height: 40px;
-            background-color: #F0F0F0;
+            background-color: #f0f0f0;
             margin-right: 10px;
-            border: 1px solid #AAA;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #777;
         }
         .sidebar-box {
-            background-color: #CC3333;
-            color: white;
-            padding: 5px;
-            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
         .sidebar-box h3 {
-            margin: 0 0 5px 0;
-            font-size: 14px;
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
         }
         .search-box {
-            background-color: #FFFFFF;
-            padding: 5px;
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 15px;
         }
         .search-box input[type="text"] {
             width: 100%;
-            padding: 2px;
-            font-size: 12px;
+            padding: 8px;
+            font-size: 13px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 5px;
         }
         .search-box input[type="submit"] {
             width: 100%;
-            padding: 2px;
-            font-size: 12px;
-            background-color: #CCCCCC;
-            border: 1px solid #999;
+            padding: 8px;
+            font-size: 13px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .search-box input[type="submit"]:hover {
+            background-color: #2980b9;
         }
         .footer {
             text-align: center;
-            padding: 5px;
-            font-size: 10px;
-            color: #666;
+            padding: 10px;
+            font-size: 11px;
+            color: #777;
+            border-top: 1px solid #ddd;
+            background-color: #fafafa;
+        }
+        .topic-stats {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        .user-info {
+            font-size: 12px;
+            color: #555;
+            margin-top: 5px;
+        }
+        .btn-create {
+            background: #27ae60;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .btn-create:hover {
+            background: #2ecc71;
         }
     </style>
 </head>
@@ -110,16 +185,24 @@
     <div class="container">
         <!-- Шапка -->
         <div class="header">
-            <img src="https://via.placeholder.com/300x80?text=ROBLOX+HQ" alt="Logo">
+            <img src="https://via.placeholder.com/150x40?text=ROBLOX+FORUM" alt="Logo">
+            <div class="nav-actions">
+                <a href="#" class="btn-create">+ Create Topic</a>
+            </div>
         </div>
 
         <!-- Навигация -->
         <div class="nav-bar">
-            <a href="#">Login</a> | 
-            <a href="#">Register</a> | 
-            <a href="#">User List</a> | 
-            <a href="#">Rules</a> | 
-            <a href="#">FAQ</a> | 
+            <a href="#">Home</a>
+            <a href="#">Categories</a>
+            <a href="#">Recent Activity</a>
+            <a href="#">Notifications</a>
+            <a href="#">Settings</a>
+            <a href="#">Login</a>
+            <a href="#">Register</a>
+            <a href="#">User List</a>
+            <a href="#">Rules</a>
+            <a href="#">FAQ</a>
             <a href="#">RSS</a>
         </div>
 
@@ -128,41 +211,50 @@
             <!-- Левая колонка -->
             <div class="left-column">
                 <div class="section">
-                    <div class="section-header">Latest Place Reviews</div>
+                    <div class="section-header">
+                        Latest Place Reviews
+                        <a href="#" class="action-btn">View All</a>
+                    </div>
                     <div class="post post-blue">
-                        <div class="post-avatar"></div>
-                        <strong>GAMEPLAY:</strong> --rating-- / 8<br><br>
-                        --The game is good fo someone who wants to show off thier building skills, but the downside is that other player always have the ability to resize...<br><br>
-                        by [User]
+                        <div class="post-avatar">U</div>
+                        <strong>GAMEPLAY:</strong> 7/10<br><br>
+                        The game is good for someone who wants to show off their building skills, but the downside is that other players always have the ability to resize...<br><br>
+                        <div class="user-info">by <a href="#">User123</a> • 2 hours ago</div>
                     </div>
                     <div class="post post-yellow">
-                        <div class="post-avatar"></div>
+                        <div class="post-avatar">A</div>
                         Hello! For whatever reason you may want to read this for, I just want to warn/inform you of a few things first.<br><br>
                         -My reviews are usually EXTREMELY long.<br>
-                        -I play each game a minimum o...<br><br>
-                        by [User]
+                        -I play each game a minimum of 30 minutes...<br><br>
+                        <div class="user-info">by <a href="#">AlphaPlayer</a> • 5 hours ago</div>
                     </div>
                     <div class="post post-blue">
-                        <div class="post-avatar"></div>
+                        <div class="post-avatar">G</div>
                         <strong>GAMEPLAY:</strong> 9/10<br><br>
-                        The gameplay? It was fun. Except for the fact that it took forever for me to find a working server. )x On some servers, when I pressed Y, the jet wouldn't go. On o...<br><br>
-                        by [User]
+                        The gameplay? It was fun. Except for the fact that it took forever for me to find a working server. On some servers, when I pressed Y, the jet wouldn't go...<br><br>
+                        <div class="user-info">by <a href="#">GameMaster99</a> • Yesterday</div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-header">Forum Down</div>
+                    <div class="section-header">
+                        Forum Updates
+                        <a href="#" class="action-btn">Read More</a>
+                    </div>
                     <div class="post">
-                        <strong>#33 - MONDAY 2010-08-16 BY</strong><br><br>
-                        I realized the forum is down. It's because the database got so big that the hoster complained. Gimme some time to figure it out.
+                        <strong>#33 - MONDAY 2026-01-20 BY Admin</strong><br><br>
+                        We’ve upgraded our database and fixed performance issues. Thanks for your patience!
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-header">Almasy Tactics</div>
+                    <div class="section-header">
+                        New Game Announcements
+                        <a href="#" class="action-btn">Post</a>
+                    </div>
                     <div class="post">
-                        <strong>#32 - SUNDAY 2010-05-16 BY</strong><br><br>
-                        I've been working on a new browser game called <a href="#">Almasy Tactics</a>!
+                        <strong>#32 - SUNDAY 2026-01-18 BY DevTeam</strong><br><br>
+                        We're launching a new browser game called <a href="#">Almasy Tactics</a> next week! Stay tuned for beta access.
                     </div>
                 </div>
             </div>
@@ -170,30 +262,50 @@
             <!-- Правая колонка -->
             <div class="right-column">
                 <div class="sidebar-box">
-                    <p>Welcome to My Horror Web, the first and largest fansite! Note: This site is NOT affiliated with any game in any way. Nothing said here reflects on the main site.</p>
+                    <h3>Welcome to Roblox Community Forum</h3>
+                    <p>Join thousands of players to discuss games, share tips, and connect with creators. This site is not affiliated with Roblox Corporation.</p>
                 </div>
 
                 <div class="sidebar-box">
-                    <h3>Search the Site</h3>
+                    <h3>Search Forum</h3>
                     <div class="search-box">
-                        <input type="text" placeholder="Google™ Custom Search">
+                        <input type="text" placeholder="Search topics or users...">
                         <input type="submit" value="Search">
                     </div>
                 </div>
 
                 <div class="sidebar-box">
-                    <h3>ROFL Index : 1,653 (+1653)</h3>
+                    <h3>Top Topics This Week</h3>
+                    <ul style="padding-left: 15px; list-style: disc;">
+                        <li><a href="#">Best Building Games 2026</a> (120 replies)</li>
+                        <li><a href="#">How to Fix Server Lag</a> (87 replies)</li>
+                        <li><a href="#">New Scripting API Guide</a> (64 replies)</li>
+                    </ul>
                 </div>
 
                 <div class="sidebar-box">
-                    <h3>None right now.</h3>
+                    <h3>Active Users Now</h3>
+                    <p>Online: <strong>47</strong> | Members: <strong>12,304</strong></p>
+                    <div style="font-size: 12px; color: #888;">
+                        Recent: User123, AlphaPlayer, GameMaster99, DevTeam...
+                    </div>
+                </div>
+
+                <div class="sidebar-box">
+                    <h3>Quick Links</h3>
+                    <ul style="padding-left: 15px; list-style: none; font-size: 13px;">
+                        <li><a href="#">Report a Bug</a></li>
+                        <li><a href="#">Suggest a Feature</a></li>
+                        <li><a href="#">Developer Resources</a></li>
+                        <li><a href="#">Moderator Guidelines</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
 
         <!-- Подвал -->
         <div class="footer">
-            © 2026 My Horror Web — All Rights Reserved. No affiliation with any official game.
+            © 2026 Roblox Community Forum — All Rights Reserved. Not affiliated with Roblox Corporation.
         </div>
     </div>
 </body>
